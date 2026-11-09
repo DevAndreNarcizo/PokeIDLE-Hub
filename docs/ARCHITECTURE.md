@@ -110,6 +110,10 @@ Autenticação do painel: `POST /auth/login` (senha → JWT curto + refresh). Po
 
 WebSocket `/ws` (painel autenticado): servidor → cliente `account.updated`, `alert.opened`, `alert.resolved`, `sync.state`; cliente → servidor `sync.all`. Ponte: `sync.request` do servidor para a extensão; `snapshot` da extensão para o servidor. Mensagens versionadas (`v: 1`).
 
+Implementação da ponte (F2-T5): WebSocket `/bridge`. O navegador não permite cabeçalhos no WebSocket, então a extensão autentica com a primeira mensagem `{ v: 1, type: 'hello', token }` (prazo de 5 s; falha fecha com 4003). Uma conexão por conta: a mais nova substitui a anterior (4002). Extensão → API: `hello`, `snapshot`, `ping` (a cada 20 s, mantém o service worker do MV3 ativo). API → extensão: `hello.ok`, `sync.request`, `snapshot.ack`, `error`. Painel: token expirado fecha `/ws` com 4001. Schemas em `packages/shared/src/protocol`.
+
+Rotas adicionais da Fase 2: `GET /sync` (estado atual) e `POST /accounts/:id/snapshot` (entrada manual, `source = 'manual'`, sessão do painel).
+
 ## 6. Modelo de dados (PostgreSQL)
 
 ```sql

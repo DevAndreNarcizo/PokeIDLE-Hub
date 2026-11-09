@@ -9,6 +9,7 @@ import { createApp } from './app.js';
 import { createArgon2Verifier } from './auth/password.js';
 import { PrismaRefreshTokenStore } from './auth/refresh-token.store.js';
 import { AccessTokenService } from './auth/tokens.js';
+import { BridgeGateway } from './bridge/bridge-gateway.js';
 import { BridgeTokenService } from './bridge/bridge-token.service.js';
 import { EnvValidationError, loadEnv } from './config/env.js';
 import type { Env } from './config/env.js';
@@ -49,7 +50,8 @@ function main(): void {
   const tokens = new AccessTokenService(env.HUB_JWT_SECRET, env.ACCESS_TOKEN_TTL_SECONDS);
   const bridgeTokens = new BridgeTokenService(prisma);
 
-  // Provedores de status: a ponte da extensão entra aqui (F2-T5).
+  // Provedores de status (ARCHITECTURE.md §1): a ponte da extensão é a fonte aprovada no S0.2.
+  // A entrada manual não é pedida pela sincronização; chega por POST /accounts/:id/snapshot.
   const providers: StatusProvider[] = [];
   const coordinator = new SyncCoordinator({
     providers,
@@ -62,6 +64,13 @@ function main(): void {
     new SnapshotService(accounts, events, () => new Date(), staleMarks),
     coordinator,
   );
+  const bridge = new BridgeGateway({
+    tokens: bridgeTokens,
+    sink,
+    logger,
+    snapshotsPerMinute: env.INGEST_RATE_PER_MINUTE,
+  });
+  providers.push(bridge);
 
   const app = createApp({
     env,
@@ -79,7 +88,7 @@ function main(): void {
       },
     },
     ingest: { bridgeTokens, sink, ratePerMinute: env.INGEST_RATE_PER_MINUTE },
-    accounts: { accounts },
+    accounts: { accounts, manualSink: sink },
     sync: coordinator,
   });
 
@@ -94,12 +103,13 @@ function main(): void {
   const server = app.listen(env.PORT, () => {
     logger.info({ port: env.PORT, env: env.NODE_ENV }, 'API no ar');
   });
-  attachWebSockets(server, { '/ws': panel }, logger);
+  attachWebSockets(server, { '/ws': panel, '/bridge': bridge }, logger);
 
   const shutdown = (signal: string): void => {
     logger.info({ signal }, 'encerrando');
     coordinator.dispose();
     panel.close();
+    bridge.close();
     server.close(() => {
       void prisma.$disconnect().finally(() => process.exit(0));
     });

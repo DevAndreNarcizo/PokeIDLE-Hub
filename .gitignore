@@ -10,3 +10,4 @@ test-results/
 *.log
 .DS_Store
 apps/api/src/generated/
+extension/dist/

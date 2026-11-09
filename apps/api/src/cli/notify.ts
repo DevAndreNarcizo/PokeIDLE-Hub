@@ -36,7 +36,9 @@ async function main(): Promise<void> {
       createLogger('warn'),
     );
     const result = await push.sendMessage(title, body, tag);
-    process.stdout.write(`push: ${result.sent} enviado(s), ${result.removed} removido(s), ${result.failed} falha(s)\n`);
+    process.stdout.write(
+      `push: ${result.sent} enviado(s), ${result.removed} removido(s), ${result.failed} falha(s)\n`,
+    );
   } finally {
     await prisma.$disconnect();
   }

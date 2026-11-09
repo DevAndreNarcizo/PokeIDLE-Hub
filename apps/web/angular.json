@@ -84,9 +84,7 @@
           "defaultConfiguration": "development",
           "options": {
             "prebundle": {
-              "exclude": [
-                "@pokeidle-hub/shared"
-              ]
+              "exclude": ["@pokeidle-hub/shared"]
             }
           }
         },

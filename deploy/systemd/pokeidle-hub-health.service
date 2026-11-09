@@ -1,0 +1,14 @@
+# Verificação do /health do PokeIdle Hub (disparada pelo timer a cada minuto).
+# @author André Narcizo - andre.narcizo@sysout.com.br
+[Unit]
+Description=PokeIdle Hub: alarme do /health
+
+[Service]
+Type=oneshot
+User=pokeidle
+Group=pokeidle
+ExecStart=/var/www/pokeidle-hub/deploy/healthcheck.sh
+StateDirectory=pokeidle-hub
+NoNewPrivileges=yes
+PrivateTmp=yes
+ProtectSystem=strict

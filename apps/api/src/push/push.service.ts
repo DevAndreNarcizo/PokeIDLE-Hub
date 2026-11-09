@@ -126,6 +126,18 @@ export class PushService {
   }
 
   /**
+   * Mensagem livre para todos os aparelhos (ex.: alarme do /health).
+   *
+   * @param title Título.
+   * @param body Texto.
+   * @param tag Agrupador.
+   * @returns Resultado do envio.
+   */
+  sendMessage(title: string, body: string, tag: string): Promise<PushResult> {
+    return this.broadcast(buildPayload(title, body, tag));
+  }
+
+  /**
    * Notificação de teste para todos os aparelhos.
    *
    * @returns Resultado do envio.

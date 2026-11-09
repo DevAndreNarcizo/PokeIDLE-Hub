@@ -18,7 +18,7 @@ export function testPrisma(): PrismaClient {
 /** Limpa todas as tabelas e recria as 4 contas. */
 export async function resetDatabase(prisma: PrismaClient): Promise<void> {
   await prisma.$executeRawUnsafe(
-    'TRUNCATE snapshots, account_state, alerts, daily_tasks, hunt_observations, refresh_tokens, accounts RESTART IDENTITY CASCADE',
+    'TRUNCATE snapshots, account_state, alerts, daily_tasks, hunt_observations, refresh_tokens, push_subscriptions, accounts RESTART IDENTITY CASCADE',
   );
   await prisma.account.createMany({
     data: [1, 2, 3, 4].map((id) => ({ id, label: `Conta ${id}` })),

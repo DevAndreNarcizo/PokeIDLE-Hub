@@ -51,6 +51,9 @@
   }
 
   <div class="controls">
+    @if (!compact()) {
+      <hub-push-toggle />
+    }
     <button
       type="button"
       class="switch"

@@ -22,6 +22,8 @@ import { SnapshotService } from './ingest/snapshot.service.js';
 import { startAlertClock } from './jobs/alert-clock.job.js';
 import { RetentionJob } from './jobs/retention.job.js';
 import { createLogger } from './logger.js';
+import { PushService } from './push/push.service.js';
+import { WebPushSender } from './push/web-push.sender.js';
 import { RespondingSink } from './sync/responding-sink.js';
 import { StaleMarks } from './sync/stale-marks.js';
 import type { StatusProvider } from './sync/status-provider.js';
@@ -71,6 +73,31 @@ function main(): void {
     reminderAt: env.DAILY_REMINDER_TIME,
   });
 
+  // Web Push: ativo só com as duas chaves VAPID; cada alerta aberto vira notificação.
+  const vapidReady = Boolean(env.VAPID_PUBLIC_KEY && env.VAPID_PRIVATE_KEY);
+  const push =
+    env.VAPID_PUBLIC_KEY && env.VAPID_PRIVATE_KEY
+      ? new PushService(
+          prisma,
+          new WebPushSender({
+            publicKey: env.VAPID_PUBLIC_KEY,
+            privateKey: env.VAPID_PRIVATE_KEY,
+            subject: env.VAPID_SUBJECT ?? new URL(env.CORS_ORIGIN).origin,
+          }),
+          logger,
+        )
+      : null;
+  if (push) {
+    events.on('alert.opened', (alert) => {
+      const id = alert.accountId;
+      void (id === null ? Promise.resolve(null) : accounts.getView(id, new Date()))
+        .then((view) => push.notifyAlert(alert, view ? (view.nick ?? view.label) : 'Hub'))
+        .catch((err: unknown) => logger.error({ err }, 'falha ao notificar alerta'));
+    });
+  } else {
+    logger.warn('Web Push desativado: defina VAPID_PUBLIC_KEY e VAPID_PRIVATE_KEY');
+  }
+
   // Provedores de status (ARCHITECTURE.md §1): a ponte da extensão é a fonte aprovada no S0.2.
   // A entrada manual não é pedida pela sincronização; chega por POST /accounts/:id/snapshot.
   const providers: StatusProvider[] = [];
@@ -117,6 +144,7 @@ function main(): void {
     sync: coordinator,
     history: { history },
     alerts,
+    push: { service: push, publicKey: vapidReady ? (env.VAPID_PUBLIC_KEY ?? null) : null },
   });
 
   const panel = new PanelGateway({

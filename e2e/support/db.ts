@@ -14,7 +14,7 @@ export async function resetE2eDatabase(): Promise<void> {
   await client.connect();
   try {
     await client.query(
-      'TRUNCATE snapshots, account_state, alerts, daily_tasks, hunt_observations, refresh_tokens, accounts RESTART IDENTITY CASCADE',
+      'TRUNCATE snapshots, account_state, alerts, daily_tasks, hunt_observations, refresh_tokens, push_subscriptions, accounts RESTART IDENTITY CASCADE',
     );
     for (const [id, token] of Object.entries(E2E_BRIDGE_TOKENS)) {
       const hash = createHash('sha256').update(token).digest('hex');

@@ -1,10 +1,17 @@
 /**
- * Textos em pt-BR dos alertas (ARCHITECTURE.md §8), usados no painel e no push.
+ * Textos em pt-BR dos alertas (ARCHITECTURE.md §8), usados no painel e no Web Push.
  *
  * @author André Narcizo - andre.narcizo@sysout.com.br
  */
-import type { AlertView } from '@pokeidle-hub/shared';
-import { formatShortClock } from './format';
+import type { AlertView } from '../protocol/alert-view.js';
+import { toLocal } from './calendar.js';
+
+/** Hora "HH:MM" de Brasília. */
+function brasiliaClock(iso: string | undefined): string {
+  if (!iso) return '—';
+  const l = toLocal(new Date(iso));
+  return `${String(l.hour).padStart(2, '0')}:${String(l.minute).padStart(2, '0')}`;
+}
 
 const TASKS: Record<string, string> = {
   battle_pass: 'Passe de Batalha',
@@ -40,6 +47,6 @@ export function alertText(alert: AlertView): string {
       return `Pendente hoje: ${tasks ?? 'diário'}`;
     }
     case 'stale_data':
-      return `Sem dados novos desde ${formatShortClock(payload['receivedAt'] as string | undefined)}`;
+      return `Sem dados novos desde ${brasiliaClock(payload['receivedAt'] as string | undefined)}`;
   }
 }

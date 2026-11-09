@@ -11,6 +11,7 @@ import { UpcomingEvents } from '../../core/events';
 import { HubStore } from '../../core/hub-store';
 import { Viewport } from '../../core/viewport';
 import { ConnectionBanner } from '../../shared/connection-banner';
+import { PushToggle } from '../../shared/push-toggle';
 import { AccountPanel } from './account-panel/account-panel';
 import { AccountTabs } from './account-tabs/account-tabs';
 import { GlobalBar } from './global-bar/global-bar';
@@ -23,7 +24,7 @@ import { GlobalBar } from './global-bar/global-bar';
 @Component({
   selector: 'hub-dashboard-page',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [ConnectionBanner, GlobalBar, AccountPanel, AccountTabs],
+  imports: [ConnectionBanner, GlobalBar, AccountPanel, AccountTabs, PushToggle],
   templateUrl: './dashboard.page.html',
   styleUrl: './dashboard.page.scss',
 })

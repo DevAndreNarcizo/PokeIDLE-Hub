@@ -135,3 +135,15 @@ model RefreshToken {
 
   @@map("refresh_tokens")
 }
+
+/// Inscrições de Web Push dos aparelhos do dono (F4-T4).
+model PushSubscription {
+  id        BigInt   @id @default(autoincrement())
+  endpoint  String   @unique
+  p256dh    String
+  auth      String
+  userAgent String?  @map("user_agent")
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz
+
+  @@map("push_subscriptions")
+}

@@ -1,6 +1,7 @@
 import { signal } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
 import { HubStore, emptySyncState } from '../../../core/hub-store';
+import { PanelPush } from '../../../core/push.service';
 import { GlobalBar } from './global-bar';
 
 describe('GlobalBar', () => {
@@ -23,7 +24,10 @@ describe('GlobalBar', () => {
     store.syncAll.mockClear();
     TestBed.configureTestingModule({
       imports: [GlobalBar],
-      providers: [{ provide: HubStore, useValue: store }],
+      providers: [
+        { provide: HubStore, useValue: store },
+        { provide: PanelPush, useValue: { state: signal('unsupported') } },
+      ],
     });
   });
 

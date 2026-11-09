@@ -21,6 +21,12 @@ describe('loadEnv', () => {
     }
   });
 
+  it('variáveis opcionais vazias contam como não definidas', () => {
+    const env = loadEnv({ ...TEST_ENV_VARS, VAPID_PUBLIC_KEY: '', VAPID_PRIVATE_KEY: '' });
+    expect(env.VAPID_PUBLIC_KEY).toBeUndefined();
+    expect(() => loadEnv({ ...TEST_ENV_VARS, VAPID_SUBJECT: 'ftp://x' })).toThrow(/VAPID_SUBJECT/);
+  });
+
   it('rejeita porta inválida e banco que não é PostgreSQL', () => {
     expect(() => loadEnv({ ...TEST_ENV_VARS, PORT: '70000' })).toThrow(/PORT/);
     expect(() => loadEnv({ ...TEST_ENV_VARS, DATABASE_URL: 'mysql://x@y/z' })).toThrow(

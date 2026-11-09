@@ -1,5 +1,6 @@
-import type { AlertView } from '@pokeidle-hub/shared';
-import { alertText } from './alert-text';
+import { describe, expect, it } from 'vitest';
+import type { AlertView } from '../src/index.js';
+import { alertText } from '../src/index.js';
 
 const alert = (kind: AlertView['kind'], payload: Record<string, unknown> = {}): AlertView => ({
   id: '1',

@@ -14,3 +14,4 @@ export * from './protocol/bridge-messages.js';
 export * from './domain/calendar.js';
 export * from './domain/alerts.js';
 export * from './protocol/alert-view.js';
+export * from './domain/alert-text.js';

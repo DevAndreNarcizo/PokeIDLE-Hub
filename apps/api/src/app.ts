@@ -26,6 +26,8 @@ import { createIngestRouter } from './ingest/ingest.router.js';
 import type { IngestRouterDeps } from './ingest/ingest.router.js';
 import type { HealthCheck } from './http/health.js';
 import type { Logger } from './logger.js';
+import { createPushRouter } from './push/push.router.js';
+import type { PushService } from './push/push.service.js';
 import type { SyncControl } from './sync/sync-control.js';
 import { createSyncRouter } from './sync/sync.router.js';
 
@@ -54,6 +56,11 @@ export interface AppDeps {
   history?: Omit<HistoryRouterDeps, 'requireAuth'>;
   /** Alertas (exige `auth`). */
   alerts?: Pick<AlertService, 'list' | 'ack'>;
+  /** Web Push (exige `auth`); `service` nulo = desativado. */
+  push?: {
+    service: Pick<PushService, 'subscribe' | 'unsubscribe' | 'sendTest'> | null;
+    publicKey: string | null;
+  };
 }
 
 /**
@@ -92,6 +99,9 @@ export function createApp(deps: AppDeps): Express {
     }
     if (deps.alerts) {
       app.use(createAlertsRouter(deps.alerts, authenticated));
+    }
+    if (deps.push) {
+      app.use(createPushRouter(deps.push.service, deps.push.publicKey, authenticated));
     }
     if (deps.history) {
       app.use(createHistoryRouter({ ...deps.history, requireAuth: authenticated }));

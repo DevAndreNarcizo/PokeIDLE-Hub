@@ -7,6 +7,7 @@
 import { ChangeDetectionStrategy, Component, computed, inject, input } from '@angular/core';
 import { formatClock } from '../../../core/format';
 import { HubStore } from '../../../core/hub-store';
+import { PushToggle } from '../../../shared/push-toggle';
 import type { UpcomingEventView } from '../../../shared/upcoming-event';
 
 /**
@@ -20,6 +21,7 @@ import type { UpcomingEventView } from '../../../shared/upcoming-event';
   templateUrl: './global-bar.html',
   styleUrl: './global-bar.scss',
   host: { '[class.compact]': 'compact()' },
+  imports: [PushToggle],
 })
 export class GlobalBar {
   protected readonly store = inject(HubStore);

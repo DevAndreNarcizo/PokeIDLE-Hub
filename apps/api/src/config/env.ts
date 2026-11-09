@@ -6,6 +6,10 @@
  */
 import { z } from 'zod';
 
+/** Variável vazia (`NOME=` no .env) conta como não definida. */
+const optional = <T extends z.ZodType>(schema: T) =>
+  z.preprocess((v) => (v === '' ? undefined : v), schema.optional());
+
 const envSchema = z.object({
   NODE_ENV: z.enum(['development', 'test', 'production']).default('development'),
   PORT: z.coerce.number().int().min(1).max(65_535).default(3000),
@@ -39,6 +43,11 @@ const envSchema = z.object({
     .string()
     .regex(/^([01]\d|2[0-3]):[0-5]\d$/, 'use HH:MM')
     .default('18:00'),
+  /** Web Push (F4-T4): sem as duas chaves, as notificações ficam desativadas. */
+  VAPID_PUBLIC_KEY: optional(z.string().min(40)),
+  VAPID_PRIVATE_KEY: optional(z.string().min(20)),
+  /** Identificação do remetente (`mailto:` ou https). Padrão: a origem do painel. */
+  VAPID_SUBJECT: optional(z.string().regex(/^(mailto:|https:\/\/)/, 'use mailto: ou https://')),
   /** Dias de histórico de snapshots mantidos (ARCHITECTURE.md §6). */
   SNAPSHOT_RETENTION_DAYS: z.coerce.number().int().min(1).max(365).default(30),
 });

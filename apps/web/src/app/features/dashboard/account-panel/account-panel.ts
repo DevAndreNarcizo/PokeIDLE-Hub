@@ -8,7 +8,7 @@
 import { NgTemplateOutlet } from '@angular/common';
 import { ChangeDetectionStrategy, Component, computed, input, output } from '@angular/core';
 import type { AccountId, AccountView, AlertView } from '@pokeidle-hub/shared';
-import { alertText } from '../../../core/alert-text';
+import { alertText } from '@pokeidle-hub/shared/domain';
 import { formatInt, formatRemaining, formatShortClock } from '../../../core/format';
 import {
   automationsOf,

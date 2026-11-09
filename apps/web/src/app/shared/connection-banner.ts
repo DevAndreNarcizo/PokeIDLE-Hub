@@ -24,6 +24,9 @@ import { HubStore } from '../core/hub-store';
     }
   `,
   styles: `
+    :host {
+      display: contents;
+    }
     .banner {
       display: flex;
       align-items: center;

@@ -137,6 +137,26 @@ export class HubStore {
     }
   }
 
+  /** Mensagem passageira para o usuário (ex.: resultado de "Abrir / focar conta"). */
+  readonly notice = signal<string | null>(null);
+
+  /**
+   * Pede à extensão do perfil da conta para abrir ou focar a aba do jogo (F3-T5).
+   *
+   * @param accountId Conta.
+   */
+  async focusAccount(accountId: AccountId): Promise<void> {
+    this.notice.set(null);
+    try {
+      await this.api.post(`/accounts/${accountId}/focus`);
+      this.notice.set(`Conta ${accountId}: janela do jogo trazida para a frente.`);
+    } catch {
+      this.notice.set(
+        `A ponte da Conta ${accountId} não está conectada. Abra o perfil desta conta no Brave e entre no jogo.`,
+      );
+    }
+  }
+
   /**
    * Liga ou desliga o "Auto 30 s".
    *

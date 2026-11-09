@@ -1,0 +1,32 @@
+/**
+ * Breakpoints do layout (DESIGN.md §3–§4) como signals: abaixo de 820 px usa o layout de celular;
+ * a partir de 1900 px de largura, o grid 2×2.
+ *
+ * @author André Narcizo - andre.narcizo@sysout.com.br
+ */
+import { DestroyRef, Injectable, inject, signal } from '@angular/core';
+
+/** Largura máxima do layout de celular. */
+export const MOBILE_MAX_WIDTH = 819;
+/** Largura mínima do grid 2×2. */
+export const GRID_MIN_WIDTH = 1900;
+
+/**
+ * Observa as media queries do layout.
+ *
+ * @author André Narcizo - andre.narcizo@sysout.com.br
+ */
+@Injectable({ providedIn: 'root' })
+export class Viewport {
+  readonly mobile = this.watch(`(max-width: ${MOBILE_MAX_WIDTH}px)`);
+  readonly grid = this.watch(`(min-width: ${GRID_MIN_WIDTH}px)`);
+
+  private watch(query: string) {
+    const media = typeof matchMedia === 'function' ? matchMedia(query) : null;
+    const value = signal(media?.matches ?? false);
+    const listener = (event: MediaQueryListEvent) => value.set(event.matches);
+    media?.addEventListener('change', listener);
+    inject(DestroyRef).onDestroy(() => media?.removeEventListener('change', listener));
+    return value.asReadonly();
+  }
+}

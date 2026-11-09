@@ -1,0 +1,147 @@
+<article
+  class="panel"
+  [attr.aria-labelledby]="'acc-title-' + account().accountId"
+  data-testid="account-panel"
+>
+  <header class="head">
+    @if (!compact()) {
+      <span class="badge num" aria-hidden="true">{{ account().accountId }}</span>
+    }
+    <div class="title">
+      <h2 [id]="'acc-title-' + account().accountId">{{ name() }}</h2>
+      <span class="sub">{{ level() }}</span>
+    </div>
+    <span class="pill status tone-{{ status().tone }}" data-testid="status">
+      <span class="dot" aria-hidden="true"></span>{{ status().label }}
+    </span>
+  </header>
+
+  <div class="body">
+    <div class="left">
+      @if (compact()) {
+        <ng-container [ngTemplateOutlet]="bannerList" />
+      }
+      <section class="session" aria-label="Sessão do jogo">
+        <svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true">
+          <path
+            fill="none"
+            stroke="currentColor"
+            stroke-width="1.6"
+            d="M3 5h18v11H3zM9 20h6M12 16v4"
+          />
+        </svg>
+        <strong>Sessão do jogo · {{ account().label }}</strong>
+        <span class="sub">Abre na janela do perfil desta conta no Brave</span>
+        <button type="button" class="btn" data-testid="focus-account" (click)="requestFocus()">
+          Abrir / focar conta
+        </button>
+        <div class="session-meta">
+          @if (hunt(); as huntText) {
+            <span class="tag">{{ huntText }}</span>
+          }
+          <span class="tag muted">Último dado {{ lastData() }}</span>
+        </div>
+      </section>
+      <div class="team" aria-label="Equipe">
+        <span class="label">Equipe</span>
+        @if (team(); as t) {
+          <ul class="bars">
+            @for (slot of t.slots; track $index) {
+              <li class="bar tone-{{ slot.tone }}" [attr.aria-label]="slot.label">
+                <span [style.width.%]="slot.pct"></span>
+              </li>
+            }
+          </ul>
+          <span class="label standing">{{ t.standing }}</span>
+        } @else {
+          <span class="label">—</span>
+        }
+      </div>
+    </div>
+
+    <div class="right">
+      @if (!compact()) {
+        <ng-container [ngTemplateOutlet]="bannerList" />
+      }
+      <dl class="metrics">
+        @for (metric of metrics(); track metric.label) {
+          <div class="metric">
+            <dt class="label">{{ metric.label }}</dt>
+            <dd class="num">{{ metric.value }}</dd>
+          </div>
+        }
+      </dl>
+
+      <section aria-label="Boosts ativos">
+        <h3 class="label">Boosts ativos</h3>
+        @if (boosts().length) {
+          <ul class="chips">
+            @for (boost of boosts(); track boost.kind) {
+              <li class="chip">
+                {{ boost.kind }} <small>{{ boost.detail }}</small>
+              </li>
+            }
+          </ul>
+        } @else {
+          <p class="empty">{{ live() ? 'Nenhum boost ativo' : '—' }}</p>
+        }
+      </section>
+
+      <section aria-label="Automações">
+        <h3 class="label">Automações</h3>
+        @if (automations().length) {
+          <ul class="chips">
+            @for (auto of automations(); track auto.name) {
+              <li class="chip tone-{{ auto.tone }}">
+                <span class="dot" aria-hidden="true"></span>{{ auto.name }}
+                <small>{{ auto.state }}</small>
+              </li>
+            }
+          </ul>
+        } @else {
+          <p class="empty">—</p>
+        }
+      </section>
+
+      <section aria-label="Diário">
+        <h3 class="label">Diário</h3>
+        @if (daily(); as d) {
+          <ul class="chips">
+            <li class="chip daily" [class.done]="d.pass === true">
+              <span class="check" aria-hidden="true"></span>Passe
+              <small
+                >dia {{ d.passDay ?? '—' }}/30 ·
+                {{ d.pass === null ? '—' : d.pass ? 'resgatado' : 'pendente' }}</small
+              >
+            </li>
+            <li class="chip daily" [class.done]="d.vote === true">
+              <span class="check" aria-hidden="true"></span>Voto TopIdle
+              <small>{{ d.vote === null ? '—' : d.vote ? 'resgatado' : 'pendente' }}</small>
+            </li>
+          </ul>
+        } @else {
+          <p class="empty">—</p>
+        }
+      </section>
+    </div>
+  </div>
+</article>
+
+<ng-template #bannerList>
+  @for (banner of banners(); track banner.kind) {
+    <div class="banner tone-{{ banner.tone }}" role="status" [attr.data-banner]="banner.kind">
+      <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true">
+        <path
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+          d="M12 3 2 20h20L12 3zM12 10v4M12 17v.5"
+        />
+      </svg>
+      <span>{{ banner.text }}</span>
+      @if (banner.action === 'focus') {
+        <button type="button" class="btn btn--primary" (click)="requestFocus()">Jogar aqui</button>
+      }
+    </div>
+  }
+</ng-template>

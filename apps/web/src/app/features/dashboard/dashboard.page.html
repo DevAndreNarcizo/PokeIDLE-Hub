@@ -1,0 +1,11 @@
+<div class="root" [class.grid-2x2]="viewport.grid()">
+  <hub-global-bar />
+  <hub-connection-banner />
+  <main class="accounts" aria-label="Contas">
+    @for (account of store.accounts(); track account.accountId) {
+      <hub-account-panel [account]="account" [now]="now()" (focusAccount)="onFocus($event)" />
+    } @empty {
+      <p class="loading">Carregando contas…</p>
+    }
+  </main>
+</div>

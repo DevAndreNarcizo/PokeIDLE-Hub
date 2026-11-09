@@ -1,8 +1,40 @@
 /**
- * Ponto de entrada do processo da API. Será substituído pela inicialização completa na F1-T3.
+ * Ponto de entrada do processo da API: valida o ambiente, cria o logger e sobe o servidor HTTP
+ * com desligamento gracioso.
  *
  * @author André Narcizo - andre.narcizo@sysout.com.br
  */
-import { GAME_RULES_SOURCE_DATE } from '@pokeidle-hub/shared';
+import { createApp } from './app.js';
+import { EnvValidationError, loadEnv } from './config/env.js';
+import { createLogger } from './logger.js';
 
-process.stdout.write(`api pronta (regras de ${GAME_RULES_SOURCE_DATE})\n`);
+const API_VERSION = process.env['npm_package_version'] ?? '0.1.0';
+
+function main(): void {
+  let env;
+  try {
+    env = loadEnv();
+  } catch (error) {
+    if (error instanceof EnvValidationError) {
+      // Sem configuração válida não há logger configurado; stderr é o canal correto.
+      process.stderr.write(`${error.message}\nVeja .env.example.\n`);
+      process.exit(1);
+    }
+    throw error;
+  }
+
+  const logger = createLogger(env.LOG_LEVEL);
+  const app = createApp({ env, logger, version: API_VERSION });
+  const server = app.listen(env.PORT, () => {
+    logger.info({ port: env.PORT, env: env.NODE_ENV }, 'API no ar');
+  });
+
+  const shutdown = (signal: string): void => {
+    logger.info({ signal }, 'encerrando');
+    server.close(() => process.exit(0));
+  };
+  process.on('SIGTERM', () => shutdown('SIGTERM'));
+  process.on('SIGINT', () => shutdown('SIGINT'));
+}
+
+main();

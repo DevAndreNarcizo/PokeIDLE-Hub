@@ -2,7 +2,7 @@
 
 Painel pessoal para acompanhar e gerenciar 4 contas do [PokeIdle](https://pokeidle.io/app) num só lugar.
 
-> Status: em planejamento. Siga `docs/ROADMAP.md`. O projeto é de uso individual (sem ranking, sem multiusuário).
+> Status: Fase 0 (spikes) concluída e Fase 1 (fundação) entregue. Próxima: Fase 2 (pipeline de status). Siga `docs/ROADMAP.md`. O projeto é de uso individual (sem ranking, sem multiusuário).
 
 ## O que faz
 
@@ -45,16 +45,35 @@ pokeidle-hub/
 - PostgreSQL
 - Servidor Linux para deploy (`srvsysout`, em `/var/www/pokeidle-hub`)
 
-## Configuração (após a Fase 1)
+## Configuração
+
+Requer Node.js 22 (`.nvmrc`) e PostgreSQL 16.
 
 ```bash
-cp .env.example .env     # preencha DATABASE_URL, HUB_ADMIN_PASSWORD_HASH, HUB_JWT_SECRET
 npm install
-npm run db:migrate
-npm run dev
+cp .env.example .env
+npm run hash-password -w @pokeidle-hub/api   # digite a senha do painel; cole o hash no .env
+openssl rand -base64 48                      # cole em HUB_JWT_SECRET
+npm run db:migrate                           # cria as tabelas e as 4 contas
+npm run dev                                  # API em :3000 e painel em :4200
 ```
 
+| Comando | O que faz |
+| --- | --- |
+| `npm run dev` | API (tsx watch) e painel (ng serve, com proxy `/api` e `/ws`) |
+| `npm run build` | Build de shared, api e web |
+| `npm test` | Testes unitários (Vitest). Com `TEST_DATABASE_URL`, roda também os de integração com o banco |
+| `npm run lint` / `npm run typecheck` / `npm run format:check` | Qualidade |
+| `npm run db:migrate` | Migrações (desenvolvimento) e seed |
+| `npm run db:deploy -w @pokeidle-hub/api` | Migrações em produção e seed |
+
 Nunca versione o `.env`. O hub não guarda a senha do jogo.
+
+## Decisões da Fase 0
+
+- O jogo **proíbe iframe**: cada conta roda na própria janela, em 4 perfis do Brave (`docs/spikes/S0.1.md`).
+- Fonte de status: **extensão própria só de leitura para Brave** (`docs/spikes/S0.2.md`).
+- Métricas de hunt **medidas** nas sessões reais, nunca estimadas (`docs/spikes/S0.3.md`).
 
 ## Autor
 

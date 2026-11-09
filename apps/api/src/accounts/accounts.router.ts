@@ -5,6 +5,7 @@
  */
 import { Router } from 'express';
 import type { RequestHandler } from 'express';
+import type { AccountId } from '@pokeidle-hub/shared';
 import { accountIdSchema, parseAccountSnapshot } from '@pokeidle-hub/shared';
 import { HttpError } from '../http/errors.js';
 import type { SnapshotSink } from '../ingest/snapshot-sink.js';
@@ -20,6 +21,8 @@ export interface AccountsRouterDeps {
   requireAuth: RequestHandler;
   /** Destino da entrada manual (fallback do provedor de status). */
   manualSink?: SnapshotSink;
+  /** Foco da janela da conta pela ponte (F3-T5). */
+  focus?: { focus(accountId: AccountId): boolean };
   now?: () => Date;
 }
 
@@ -58,5 +61,17 @@ export function createAccountsRouter(deps: AccountsRouterDeps): Router {
     const status = await sink.ingest(parsed.snapshot, now());
     res.status(status === 'stored' ? 201 : 200).json({ status });
   });
+  // Abrir/focar a janela da conta (cartão "Sessão do jogo" e botão "Jogar aqui").
+  router.post('/accounts/:id/focus', deps.requireAuth, (req, res) => {
+    const accountId = accountIdSchema.safeParse(Number(req.params['id']));
+    if (!deps.focus || !accountId.success) {
+      throw new HttpError(404, 'not_found', 'Conta não encontrada');
+    }
+    if (!deps.focus.focus(accountId.data)) {
+      throw new HttpError(409, 'bridge_unavailable', 'A ponte desta conta não está conectada');
+    }
+    res.status(202).json({ status: 'sent' });
+  });
+
   return router;
 }

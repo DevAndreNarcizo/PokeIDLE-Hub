@@ -28,7 +28,11 @@ describe('POST /accounts/:id/snapshot (entrada manual)', () => {
         refreshTtlDays: 30,
         loginRateLimit: { max: 5, windowSeconds: 60 },
       },
-      accounts: { accounts: {} as AccountRepository, manualSink: sink },
+      accounts: {
+        accounts: {} as AccountRepository,
+        manualSink: sink,
+        focus: { focus: (id) => id === 1 },
+      },
     });
   });
 
@@ -66,5 +70,14 @@ describe('POST /accounts/:id/snapshot (entrada manual)', () => {
       (await request(app).post('/accounts/9/snapshot').set('Authorization', bearer).send(manual(1)))
         .status,
     ).toBe(404);
+  });
+
+  it('POST /accounts/:id/focus: 202 com ponte, 409 sem ponte, 401 sem sessão', async () => {
+    expect((await request(app).post('/accounts/1/focus').set('Authorization', bearer)).status).toBe(
+      202,
+    );
+    const missing = await request(app).post('/accounts/2/focus').set('Authorization', bearer);
+    expect([missing.status, missing.body.error.code]).toEqual([409, 'bridge_unavailable']);
+    expect((await request(app).post('/accounts/1/focus')).status).toBe(401);
   });
 });

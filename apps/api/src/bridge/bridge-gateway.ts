@@ -89,6 +89,22 @@ export class BridgeGateway implements StatusProvider {
     return true;
   }
 
+  /**
+   * Pede à extensão da conta que traga a aba do jogo para a frente (ou a abra). Ação sobre o
+   * navegador, não sobre o jogo (S0.1).
+   *
+   * @param accountId Conta.
+   * @returns `true` se havia ponte conectada para receber o pedido.
+   */
+  focus(accountId: AccountId): boolean {
+    const connection = this.byAccount.get(accountId);
+    if (!connection || connection.socket.readyState !== WebSocket.OPEN) {
+      return false;
+    }
+    this.send(connection, { v: PROTOCOL_VERSION, type: 'focus' });
+    return true;
+  }
+
   /** Contas com ponte conectada (diagnóstico). */
   connectedAccounts(): AccountId[] {
     return [...this.byAccount.keys()].sort();

@@ -67,6 +67,8 @@ export interface BridgePlatform {
   openSocket(url: string): SocketLike;
   /** Lê a aba do jogo; `null` quando não há aba do jogo aberta neste perfil. */
   readGameTab(accountId: AccountId): Promise<unknown>;
+  /** Traz a aba do jogo para a frente ou abre uma nova (nunca clica no jogo). */
+  focusGameTab(): Promise<void>;
   setStatus(status: BridgeStatus): void;
   setTimeout(fn: () => void, ms: number): unknown;
   clearTimeout(handle: unknown): void;
@@ -191,6 +193,9 @@ export class BridgeClient {
         }
         break;
       }
+      case 'focus':
+        await this.platform.focusGameTab().catch(() => undefined);
+        break;
       case 'snapshot.ack':
       case 'error':
         break;

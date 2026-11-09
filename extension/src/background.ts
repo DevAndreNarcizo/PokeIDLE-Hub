@@ -46,9 +46,21 @@ function openSocket(url: string): SocketLike {
   return socket;
 }
 
+async function focusGameTab(): Promise<void> {
+  const tabs = await chrome.tabs.query({ url: GAME_TAB_PATTERN });
+  const tab = tabs.find((t) => t.active) ?? tabs[0];
+  if (tab?.id === undefined) {
+    await chrome.tabs.create({ url: 'https://pokeidle.io/app', active: true });
+    return;
+  }
+  await chrome.tabs.update(tab.id, { active: true });
+  await chrome.windows.update(tab.windowId, { focused: true, drawAttention: true });
+}
+
 const client = new BridgeClient({
   openSocket,
   readGameTab,
+  focusGameTab,
   setStatus: (status: BridgeStatus) =>
     void chrome.storage.local.set({ [STORAGE_KEYS.status]: status }),
   setTimeout: (fn, ms) => setTimeout(fn, ms),

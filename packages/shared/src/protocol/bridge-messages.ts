@@ -45,6 +45,8 @@ export type BridgeClientMessage = z.infer<typeof bridgeClientMessageSchema>;
 export type BridgeServerMessage =
   | { v: 1; type: 'hello.ok'; accountId: AccountId }
   | { v: 1; type: 'sync.request'; requestId: string }
+  /** Trazer a aba do jogo para a frente (ou abri-la). Nunca age dentro do jogo. */
+  | { v: 1; type: 'focus' }
   | { v: 1; type: 'snapshot.ack'; requestId: string | null; status: 'stored' | 'duplicate' }
   | { v: 1; type: 'error'; code: string; message: string };
 
@@ -64,6 +66,7 @@ export const bridgeServerMessageSchema = z.discriminatedUnion('type', [
     type: z.literal('sync.request'),
     requestId: z.string().max(64),
   }),
+  z.object({ v: z.literal(PROTOCOL_VERSION), type: z.literal('focus') }),
   z.object({
     v: z.literal(PROTOCOL_VERSION),
     type: z.literal('snapshot.ack'),

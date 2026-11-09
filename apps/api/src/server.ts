@@ -97,7 +97,7 @@ function main(): void {
       },
     },
     ingest: { bridgeTokens, sink, ratePerMinute: env.INGEST_RATE_PER_MINUTE },
-    accounts: { accounts, manualSink: sink },
+    accounts: { accounts, manualSink: sink, focus: bridge },
     sync: coordinator,
     history: { history },
   });

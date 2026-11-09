@@ -190,6 +190,13 @@ describe('ponte /bridge (extensão)', () => {
     });
   });
 
+  it('focus envia o pedido só para a ponte da conta', async () => {
+    const client = await authed();
+    expect(bridge.focus(1)).toBe(true);
+    expect(await client.next()).toEqual({ v: 1, type: 'focus' });
+    expect(bridge.focus(2)).toBe(false);
+  });
+
   it('conta deixa de estar disponível quando a ponte desconecta', async () => {
     const client = await authed();
     client.close();

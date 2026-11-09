@@ -45,6 +45,11 @@ class FakePlatform implements BridgePlatform {
   readGameTab(): Promise<unknown> {
     return Promise.resolve(this.tab);
   }
+  focused = 0;
+  focusGameTab(): Promise<void> {
+    this.focused += 1;
+    return Promise.resolve();
+  }
   setStatus(status: BridgeStatus): void {
     this.statuses.push(status);
   }
@@ -146,6 +151,13 @@ describe('BridgeClient', () => {
         snapshot: { accountId: 2, status: 'offline' },
       });
     }
+  });
+
+  it('pedido de foco traz a aba do jogo para a frente', async () => {
+    const socket = connected();
+    socket.receive({ v: 1, type: 'focus' });
+    await flush();
+    expect(platform.focused).toBe(1);
   });
 
   it('envia ping periódico depois de autenticar', () => {

@@ -27,6 +27,8 @@ const envSchema = z.object({
   /** Tentativas de login permitidas por IP na janela. */
   LOGIN_RATE_LIMIT_MAX: z.coerce.number().int().min(1).max(100).default(5),
   LOGIN_RATE_LIMIT_WINDOW_SECONDS: z.coerce.number().int().min(10).max(86_400).default(900),
+  /** Snapshots aceitos por conta por minuto em `POST /ingest/snapshot`. */
+  INGEST_RATE_PER_MINUTE: z.coerce.number().int().min(1).max(600).default(60),
 });
 
 /**

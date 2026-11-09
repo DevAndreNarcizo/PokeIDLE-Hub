@@ -19,7 +19,8 @@
     "prebuild": "prisma generate",
     "pretypecheck": "prisma generate",
     "pretest": "prisma generate",
-    "hash-password": "tsx src/cli/hash-password.ts"
+    "hash-password": "tsx src/cli/hash-password.ts",
+    "bridge-token": "tsx --env-file-if-exists=../../.env src/cli/bridge-token.ts"
   },
   "dependencies": {
     "@node-rs/argon2": "^2.2.2",

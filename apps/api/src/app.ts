@@ -16,6 +16,8 @@ import type { Env } from './config/env.js';
 import { createCors } from './http/cors.js';
 import { createErrorHandler, notFoundHandler } from './http/errors.js';
 import { createHealthRouter } from './http/health.js';
+import { createIngestRouter } from './ingest/ingest.router.js';
+import type { IngestRouterDeps } from './ingest/ingest.router.js';
 import type { HealthCheck } from './http/health.js';
 import type { Logger } from './logger.js';
 
@@ -34,6 +36,8 @@ export interface AppDeps {
   healthChecks?: Readonly<Record<string, HealthCheck>>;
   /** Autenticação do painel; ausente só em testes que não envolvem rotas protegidas. */
   auth?: Omit<AuthRouterDeps, 'logger'>;
+  /** Ingestão de snapshots pela ponte. */
+  ingest?: IngestRouterDeps;
 }
 
 /**
@@ -63,6 +67,10 @@ export function createApp(deps: AppDeps): Express {
     app.get('/auth/session', requireAuth(deps.auth.tokens), (_req, res) => {
       res.json({ authenticated: true });
     });
+  }
+
+  if (deps.ingest) {
+    app.use(createIngestRouter(deps.ingest));
   }
 
   app.use(notFoundHandler);

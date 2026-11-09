@@ -7,6 +7,7 @@ import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
 import type { OnDestroy, OnInit } from '@angular/core';
 import { HubStore } from '../../core/hub-store';
 import { ConnectionBanner } from '../../shared/connection-banner';
+import { GlobalBar } from './global-bar/global-bar';
 
 /**
  * Página do painel.
@@ -16,9 +17,10 @@ import { ConnectionBanner } from '../../shared/connection-banner';
 @Component({
   selector: 'hub-dashboard-page',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [ConnectionBanner],
+  imports: [ConnectionBanner, GlobalBar],
   template: `
     <main class="root">
+      <hub-global-bar />
       <hub-connection-banner />
     </main>
   `,

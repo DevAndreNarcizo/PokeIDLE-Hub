@@ -1,0 +1,37 @@
+# API do PokeIdle Hub como serviço (ARCHITECTURE.md §10). Logs JSON vão para o journal:
+#   journalctl -u pokeidle-hub-api -o cat | jq
+# @author André Narcizo - andre.narcizo@sysout.com.br
+[Unit]
+Description=PokeIdle Hub API
+After=network-online.target postgresql.service
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=pokeidle
+Group=pokeidle
+WorkingDirectory=/var/www/pokeidle-hub/apps/api
+# O próprio Node lê o .env (aceita o hash argon2 entre aspas simples sem expandir "$").
+ExecStart=/usr/bin/node --env-file=/var/www/pokeidle-hub/.env dist/server.js
+Environment=NODE_ENV=production
+Restart=on-failure
+RestartSec=5
+TimeoutStopSec=15
+
+# Endurecimento: a API não grava em disco (logs no journal, dados no PostgreSQL).
+NoNewPrivileges=yes
+PrivateTmp=yes
+PrivateDevices=yes
+ProtectSystem=strict
+ProtectHome=yes
+ProtectKernelTunables=yes
+ProtectKernelModules=yes
+ProtectControlGroups=yes
+RestrictSUIDSGID=yes
+RestrictNamespaces=yes
+LockPersonality=yes
+CapabilityBoundingSet=
+AmbientCapabilities=
+
+[Install]
+WantedBy=multi-user.target

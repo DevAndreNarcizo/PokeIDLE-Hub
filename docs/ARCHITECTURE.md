@@ -186,6 +186,14 @@ CREATE TABLE hunt_observations (       -- medições reais por hunt (decisão S0
   source        text NOT NULL            -- 'extension' | 'manual'
 );
 CREATE INDEX hunt_observations_hunt ON hunt_observations (region, hunt_level, ended_at DESC);
+
+CREATE TABLE refresh_tokens (           -- sessões do painel (F1-T5); só o hash SHA-256
+  id            bigserial PRIMARY KEY,
+  token_hash    text NOT NULL UNIQUE,
+  created_at    timestamptz NOT NULL DEFAULT now(),
+  expires_at    timestamptz NOT NULL,
+  revoked_at    timestamptz             -- rotação: cada refresh vale uma vez; reuso revoga todos
+);
 ```
 
 Retenção: job diário apaga `snapshots` com mais de N dias (padrão 30). Downsample opcional para 1 ponto por minuto após 24 h.

@@ -124,3 +124,14 @@ model HuntObservation {
   @@index([region, huntLevel, endedAt(sort: Desc)], map: "hunt_observations_hunt")
   @@map("hunt_observations")
 }
+
+/// Refresh tokens do painel (só o hash SHA-256). Rotacionados a cada uso (F1-T5).
+model RefreshToken {
+  id        BigInt    @id @default(autoincrement())
+  tokenHash String    @unique @map("token_hash")
+  createdAt DateTime  @default(now()) @map("created_at") @db.Timestamptz
+  expiresAt DateTime  @map("expires_at") @db.Timestamptz
+  revokedAt DateTime? @map("revoked_at") @db.Timestamptz
+
+  @@map("refresh_tokens")
+}

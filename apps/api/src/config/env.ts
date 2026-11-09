@@ -16,6 +16,17 @@ const envSchema = z.object({
   DATABASE_URL: z
     .url()
     .refine((v) => /^postgres(ql)?:\/\//.test(v), 'deve ser uma URL postgresql://'),
+  /** Hash argon2 da senha do painel (gere com `npm run hash-password -w @pokeidle-hub/api`). */
+  HUB_ADMIN_PASSWORD_HASH: z.string().startsWith('$argon2', 'deve ser um hash argon2'),
+  /** Segredo HMAC dos JWT de acesso (mínimo 32 caracteres aleatórios). */
+  HUB_JWT_SECRET: z.string().min(32, 'mínimo de 32 caracteres'),
+  /** Validade do token de acesso (ARCHITECTURE.md §9: 15 min). */
+  ACCESS_TOKEN_TTL_SECONDS: z.coerce.number().int().min(60).max(3_600).default(900),
+  /** Validade do refresh token. */
+  REFRESH_TOKEN_TTL_DAYS: z.coerce.number().int().min(1).max(90).default(30),
+  /** Tentativas de login permitidas por IP na janela. */
+  LOGIN_RATE_LIMIT_MAX: z.coerce.number().int().min(1).max(100).default(5),
+  LOGIN_RATE_LIMIT_WINDOW_SECONDS: z.coerce.number().int().min(10).max(86_400).default(900),
 });
 
 /**

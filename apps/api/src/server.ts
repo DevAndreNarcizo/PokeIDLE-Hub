@@ -5,6 +5,9 @@
  * @author André Narcizo - andre.narcizo@sysout.com.br
  */
 import { createApp } from './app.js';
+import { createArgon2Verifier } from './auth/password.js';
+import { PrismaRefreshTokenStore } from './auth/refresh-token.store.js';
+import { AccessTokenService } from './auth/tokens.js';
 import { EnvValidationError, loadEnv } from './config/env.js';
 import { createPrismaClient, pingDatabase } from './db/client.js';
 import { createLogger } from './logger.js';
@@ -31,6 +34,16 @@ function main(): void {
     logger,
     version: API_VERSION,
     healthChecks: { database: () => pingDatabase(prisma) },
+    auth: {
+      tokens: new AccessTokenService(env.HUB_JWT_SECRET, env.ACCESS_TOKEN_TTL_SECONDS),
+      refreshStore: new PrismaRefreshTokenStore(prisma),
+      verifyPassword: createArgon2Verifier(env.HUB_ADMIN_PASSWORD_HASH),
+      refreshTtlDays: env.REFRESH_TOKEN_TTL_DAYS,
+      loginRateLimit: {
+        max: env.LOGIN_RATE_LIMIT_MAX,
+        windowSeconds: env.LOGIN_RATE_LIMIT_WINDOW_SECONDS,
+      },
+    },
   });
   const server = app.listen(env.PORT, () => {
     logger.info({ port: env.PORT, env: env.NODE_ENV }, 'API no ar');

@@ -22,6 +22,8 @@ import { createIngestRouter } from './ingest/ingest.router.js';
 import type { IngestRouterDeps } from './ingest/ingest.router.js';
 import type { HealthCheck } from './http/health.js';
 import type { Logger } from './logger.js';
+import type { SyncControl } from './sync/sync-control.js';
+import { createSyncRouter } from './sync/sync.router.js';
 
 /** Tamanho máximo do corpo JSON (ARCHITECTURE.md §9: limite de payload). */
 const MAX_JSON_BODY = '64kb';
@@ -42,6 +44,8 @@ export interface AppDeps {
   ingest?: IngestRouterDeps;
   /** Rotas de contas (exigem `auth`). */
   accounts?: Omit<AccountsRouterDeps, 'requireAuth'>;
+  /** Controle da sincronização (exige `auth`). */
+  sync?: SyncControl;
 }
 
 /**
@@ -74,6 +78,9 @@ export function createApp(deps: AppDeps): Express {
     });
     if (deps.accounts) {
       app.use(createAccountsRouter({ ...deps.accounts, requireAuth: authenticated }));
+    }
+    if (deps.sync) {
+      app.use(createSyncRouter(deps.sync, authenticated));
     }
   }
 

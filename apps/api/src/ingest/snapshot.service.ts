@@ -7,6 +7,7 @@
 import type { AccountSnapshot } from '@pokeidle-hub/shared';
 import type { AccountRepository } from '../accounts/account.repository.js';
 import type { HubEvents } from '../events/hub-events.js';
+import type { StaleMarks } from '../sync/stale-marks.js';
 import type { IngestOutcome, SnapshotSink } from './snapshot-sink.js';
 
 /**
@@ -19,11 +20,13 @@ export class SnapshotService implements SnapshotSink {
    * @param accounts Repositório das contas.
    * @param events Barramento de eventos.
    * @param now Relógio injetável.
+   * @param staleMarks Marcas de obsoleto, limpas quando chega dado novo.
    */
   constructor(
     private readonly accounts: AccountRepository,
     private readonly events: HubEvents,
     private readonly now: () => Date = () => new Date(),
+    private readonly staleMarks?: StaleMarks,
   ) {}
 
   /** @inheritdoc */
@@ -32,6 +35,7 @@ export class SnapshotService implements SnapshotSink {
     if (!stored) {
       return 'duplicate';
     }
+    this.staleMarks?.clear(snapshot.accountId);
     const view = await this.accounts.getView(snapshot.accountId, this.now());
     if (view) {
       this.events.emit('account.updated', view);

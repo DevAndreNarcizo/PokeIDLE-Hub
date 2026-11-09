@@ -7,6 +7,7 @@
 import type { AccountId, AccountSnapshot, AccountView } from '@pokeidle-hub/shared';
 import { accountIdSchema, accountSnapshotSchema, isStale } from '@pokeidle-hub/shared';
 import type { PrismaClient } from '../generated/prisma/client.js';
+import type { StaleMarks } from '../sync/stale-marks.js';
 
 /**
  * Repositório das contas.
@@ -16,8 +17,12 @@ import type { PrismaClient } from '../generated/prisma/client.js';
 export class AccountRepository {
   /**
    * @param prisma Cliente Prisma.
+   * @param staleMarks Contas marcadas como obsoletas pela sincronização (opcional).
    */
-  constructor(private readonly prisma: PrismaClient) {}
+  constructor(
+    private readonly prisma: PrismaClient,
+    private readonly staleMarks?: StaleMarks,
+  ) {}
 
   /**
    * Grava o snapshot se for mais novo que o atual, numa única instrução atômica: atualiza
@@ -68,14 +73,15 @@ export class AccountRepository {
       const snapshot = account.state
         ? accountSnapshotSchema.safeParse(account.state.payload)
         : null;
+      const accountId = accountIdSchema.parse(account.id);
       return {
-        accountId: accountIdSchema.parse(account.id),
+        accountId,
         label: account.label,
         nick: account.nick,
         // Payload gravado sempre passou pelo schema; se o contrato mudar, o antigo vira "sem dado".
         snapshot: snapshot?.success ? snapshot.data : null,
         receivedAt: receivedAt?.toISOString() ?? null,
-        stale: isStale(receivedAt, now),
+        stale: isStale(receivedAt, now) || (this.staleMarks?.has(accountId) ?? false),
       };
     });
   }

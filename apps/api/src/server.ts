@@ -6,6 +6,7 @@
  */
 import { createApp } from './app.js';
 import { EnvValidationError, loadEnv } from './config/env.js';
+import { createPrismaClient, pingDatabase } from './db/client.js';
 import { createLogger } from './logger.js';
 
 const API_VERSION = process.env['npm_package_version'] ?? '0.1.0';
@@ -24,14 +25,22 @@ function main(): void {
   }
 
   const logger = createLogger(env.LOG_LEVEL);
-  const app = createApp({ env, logger, version: API_VERSION });
+  const prisma = createPrismaClient(env.DATABASE_URL);
+  const app = createApp({
+    env,
+    logger,
+    version: API_VERSION,
+    healthChecks: { database: () => pingDatabase(prisma) },
+  });
   const server = app.listen(env.PORT, () => {
     logger.info({ port: env.PORT, env: env.NODE_ENV }, 'API no ar');
   });
 
   const shutdown = (signal: string): void => {
     logger.info({ signal }, 'encerrando');
-    server.close(() => process.exit(0));
+    server.close(() => {
+      void prisma.$disconnect().finally(() => process.exit(0));
+    });
   };
   process.on('SIGTERM', () => shutdown('SIGTERM'));
   process.on('SIGINT', () => shutdown('SIGINT'));

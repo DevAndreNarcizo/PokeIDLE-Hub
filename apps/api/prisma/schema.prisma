@@ -1,0 +1,126 @@
+// Modelo de dados do PokeIdle Hub (docs/ARCHITECTURE.md §6).
+// Datas sempre em UTC (timestamptz). Nomes físicos em snake_case via @map/@@map.
+// @author André Narcizo - andre.narcizo@sysout.com.br
+
+generator client {
+  provider            = "prisma-client"
+  output              = "../src/generated/prisma"
+  moduleFormat        = "esm"
+  importFileExtension = "js"
+  previewFeatures     = ["partialIndexes"]
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+/// As 4 contas do dono. O id vai de 1 a 4 (CHECK criado na migração inicial).
+model Account {
+  id              Int      @id @db.SmallInt
+  label           String
+  nick            String?
+  bridgeTokenHash String?  @map("bridge_token_hash")
+  createdAt       DateTime @default(now()) @map("created_at") @db.Timestamptz
+
+  state            AccountState?
+  snapshots        Snapshot[]
+  alerts           Alert[]
+  dailyTasks       DailyTask[]
+  huntObservations HuntObservation[]
+
+  @@map("accounts")
+}
+
+/// Último snapshot de cada conta (uma linha por conta).
+model AccountState {
+  accountId  Int      @id @map("account_id") @db.SmallInt
+  payload    Json     @db.JsonB
+  capturedAt DateTime @map("captured_at") @db.Timestamptz
+  receivedAt DateTime @default(now()) @map("received_at") @db.Timestamptz
+
+  account Account @relation(fields: [accountId], references: [id])
+
+  @@map("account_state")
+}
+
+/// Histórico de snapshots.
+model Snapshot {
+  id               BigInt   @id @default(autoincrement())
+  accountId        Int      @map("account_id") @db.SmallInt
+  capturedAt       DateTime @map("captured_at") @db.Timestamptz
+  status           String
+  xpTrainerPerHour Decimal? @map("xp_trainer_per_hour") @db.Decimal
+  xpPokemonPerHour Decimal? @map("xp_pokemon_per_hour") @db.Decimal
+  payload          Json     @db.JsonB
+
+  account Account @relation(fields: [accountId], references: [id])
+
+  @@index([accountId, capturedAt(sort: Desc)], map: "snapshots_account_time")
+  @@map("snapshots")
+}
+
+/// Alertas: no máximo um aberto por (conta, tipo).
+model Alert {
+  id         BigInt    @id @default(autoincrement())
+  accountId  Int?      @map("account_id") @db.SmallInt
+  kind       String
+  openedAt   DateTime  @default(now()) @map("opened_at") @db.Timestamptz
+  resolvedAt DateTime? @map("resolved_at") @db.Timestamptz
+  ackedAt    DateTime? @map("acked_at") @db.Timestamptz
+  payload    Json?     @db.JsonB
+
+  account Account? @relation(fields: [accountId], references: [id])
+
+  @@unique([accountId, kind], where: raw("resolved_at IS NULL"), map: "alerts_one_open")
+  @@map("alerts")
+}
+
+/// Pendências diárias por conta. `day` é o dia de Brasília.
+model DailyTask {
+  accountId Int       @map("account_id") @db.SmallInt
+  day       DateTime  @db.Date
+  task      String
+  doneAt    DateTime? @map("done_at") @db.Timestamptz
+
+  account Account @relation(fields: [accountId], references: [id])
+
+  @@id([accountId, day, task])
+  @@map("daily_tasks")
+}
+
+/// Catálogo de hunts, só com dados de fonte registrada (spike S0.3).
+model HuntCatalog {
+  id      Int      @id @default(autoincrement())
+  region  String
+  level   Int
+  species String?
+  types   String[]
+  source  String
+
+  @@unique([region, level, species])
+  @@map("hunt_catalog")
+}
+
+/// Medições reais por hunt, lidas pela extensão (decisão do dono no spike S0.3).
+model HuntObservation {
+  id           BigInt   @id @default(autoincrement())
+  accountId    Int      @map("account_id") @db.SmallInt
+  region       String
+  huntLevel    Int      @map("hunt_level")
+  huntName     String?  @map("hunt_name")
+  species      String?
+  pokemonLevel Int?     @map("pokemon_level")
+  startedAt    DateTime @map("started_at") @db.Timestamptz
+  endedAt      DateTime @map("ended_at") @db.Timestamptz
+  kills        Int?
+  xpTrainer    Decimal? @map("xp_trainer") @db.Decimal
+  xpPokemon    Decimal? @map("xp_pokemon") @db.Decimal
+  gold         Decimal? @db.Decimal
+  captures     Int?
+  source       String
+
+  account Account @relation(fields: [accountId], references: [id])
+
+  @@index([region, huntLevel, endedAt(sort: Desc)], map: "hunt_observations_hunt")
+  @@map("hunt_observations")
+}

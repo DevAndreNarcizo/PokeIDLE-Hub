@@ -1,0 +1,31 @@
+{
+  "name": "@pokeidle-hub/shared",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Tipos, schemas zod e regras puras do jogo compartilhados entre api, web e extensão.",
+  "author": "André Narcizo <andre.narcizo@sysout.com.br>",
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    }
+  },
+  "files": [
+    "dist"
+  ],
+  "sideEffects": false,
+  "scripts": {
+    "build": "tsc -p tsconfig.build.json",
+    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "test": "vitest run --passWithNoTests"
+  },
+  "dependencies": {
+    "zod": "^4.6.7"
+  },
+  "devDependencies": {
+    "vitest": "^5.0.0"
+  }
+}

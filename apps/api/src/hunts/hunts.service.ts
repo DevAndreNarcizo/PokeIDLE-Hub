@@ -35,6 +35,8 @@ interface ObservationRow {
   kills: number | null;
   gold_start: string | null;
   gold: string | null;
+  xp_trainer_start: string | null;
+  xp_trainer: string | null;
   xp_trainer_per_hour: string | null;
 }
 
@@ -149,7 +151,8 @@ export class HuntsService {
     const since = new Date(now.getTime() - MEASURE_WINDOW_DAYS * 86_400_000);
     const rows = await this.prisma.$queryRaw<ObservationRow[]>`
       SELECT region, hunt_level, species, started_at, ended_at, kills_start, kills,
-             gold_start::text, gold::text, xp_trainer_per_hour::text
+             gold_start::text, gold::text, xp_trainer_start::text, xp_trainer::text,
+             xp_trainer_per_hour::text
       FROM hunt_observations
       WHERE account_id = ${accountId} AND ended_at >= ${since}
         AND ended_at - started_at >= make_interval(secs => ${MIN_MEASURE_MS / 1000})
@@ -170,7 +173,12 @@ export class HuntsService {
         agg.gold += Number(row.gold) - Number(row.gold_start);
         agg.goldHours += hours;
       }
-      if (row.xp_trainer_per_hour !== null) {
+      if (row.xp_trainer !== null && row.xp_trainer_start !== null) {
+        // XP medido pela diferença do total acumulado (fonte: estado do jogo).
+        agg.xpWeighted += Number(row.xp_trainer) - Number(row.xp_trainer_start);
+        agg.xpHours += hours;
+      } else if (row.xp_trainer_per_hour !== null) {
+        // XP/h informado pelo painel de sessão do jogo, ponderado pela duração.
         agg.xpWeighted += Number(row.xp_trainer_per_hour) * hours;
         agg.xpHours += hours;
       }

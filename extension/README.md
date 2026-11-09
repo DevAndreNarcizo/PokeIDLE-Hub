@@ -38,12 +38,25 @@ Para revogar um token: `npm run bridge-token -w @pokeidle-hub/api -- revoke 1`.
 
 ## O que já é lido
 
-| Campo | Fonte |
+Mapeamento conferido numa amostra real do estado (cliente v1.414.1, 09/11/2026), fixture anonimizada em
+`test/fixtures/estado.real-anon.json`.
+
+| Campo do hub | Origem no estado do jogo (via /hunt) |
 | --- | --- |
-| `trainerLevel`, `activePokemon`, `inventory.balls`, `boosts`, `seasonalTypeOfDay` | /hunt (campos conferidos no código dela, versão 1.0.17) |
-| `status = conflict` | Tela: texto "Conta aberta em outro lugar" (`GAME_RULES.md` §1). Em conflito a /hunt não é usada |
-| `status = offline` | Nenhuma aba do jogo aberta no perfil |
-| Automações, diário, contadores da sessão, hunt atual, status caçando/Centro | `null` até chegar uma amostra real do estado (`docs/OPEN_QUESTIONS.md` #12) |
+| `status` caçando / no Centro | `noCentro`, `huntSlug` e `selvagem` |
+| `hunt` | `selvagem.nome` e `selvagem.level`; região pelo catálogo da wiki quando o nível consta nele, senão `null` |
+| `trainerLevel` | `level` |
+| `activePokemon` | `pokemons[activeId]` (nome, nível, tipos, potência, qualidade, IVs, stats, shiny) |
+| `team` | `pokemons` com `slot`, HP = `hp / maxHp` |
+| `inventory` | `balls`; poções e revives = soma de `items` pelos ids de `automation.potionIds`/`reviveIds` |
+| `automations` | `automation.autoRevive`, `autoPotion`, `autoVoltarHunt` (pausada sem itens, §9), `autoBallSemParar` |
+| `daily.battlePass*` | `passe.degrau` e `passe.ultimo` (dia de Brasília do último resgate) |
+| `boosts` | `loja.boosts`, `bonusXp.partes` (VIP, guild, evento), `twitch.bonus`, `kick.bonus`; vencidos ficam de fora |
+| `seasonalTypeOfDay` | `diaSazonal.tipo` |
+| `counters` | abates e capturas = soma da Pokédex (`k`, `c`); XP total do treinador (`xp`) |
+| `session` | medida pela extensão: diferença dos totais desde o início do trecho (mesma hunt e pokemon); taxas só após 2 min |
+| `status = conflict` | Tela (texto "Conta aberta em outro lugar"); em conflito a /hunt não é usada |
+| Sem fonte ainda | voto TopIdle, Boss Token, raros, shiny visto/capturado e ouro da sessão |
 
 ## Como funciona
 

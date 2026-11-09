@@ -37,6 +37,7 @@ export function detectStatus(doc: Document): AccountStatus {
  * @param now Instante da captura.
  * @param hunt Último estado repassado pela /hunt for PokeIdle (opcional). Com estado recente, os
  *   campos conhecidos vêm dele (`reader = 'hunt_extension'`); sem ele, só a tela (`reader = 'dom'`).
+ * @param session Taxas medidas pela extensão no trecho atual (só usadas caçando).
  * @returns Snapshot válido pelo contrato compartilhado.
  * @author André Narcizo - andre.narcizo@sysout.com.br
  */
@@ -45,6 +46,7 @@ export function readSnapshot(
   accountId: AccountId,
   now: Date,
   hunt: { state: HuntState; receivedAt: number } | null = null,
+  session: AccountSnapshot['session'] = null,
 ): AccountSnapshot {
   const base: AccountSnapshot = {
     ...emptySnapshot(accountId, now),
@@ -58,7 +60,13 @@ export function readSnapshot(
   ) {
     return base;
   }
-  return { ...base, ...snapshotFieldsFromHunt(hunt.state, now), reader: 'hunt_extension' };
+  const fields = snapshotFieldsFromHunt(hunt.state, now);
+  return {
+    ...base,
+    ...fields,
+    session: fields.status === 'hunting' ? session : null,
+    reader: 'hunt_extension',
+  };
 }
 
 /**

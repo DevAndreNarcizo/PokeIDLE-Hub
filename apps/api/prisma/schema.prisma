@@ -120,6 +120,9 @@ model HuntObservation {
   gold             Decimal? @db.Decimal
   capturesStart    Int?     @map("captures_start")
   captures         Int?
+  /// XP total do treinador (acumulado) no início e na última leitura, quando a fonte informa.
+  xpTrainerStart   Decimal? @map("xp_trainer_start") @db.Decimal
+  xpTrainer        Decimal? @map("xp_trainer") @db.Decimal
   /// XP/h informado pelo jogo na última leitura.
   xpTrainerPerHour Decimal? @map("xp_trainer_per_hour") @db.Decimal
   xpPokemonPerHour Decimal? @map("xp_pokemon_per_hour") @db.Decimal

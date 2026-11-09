@@ -67,7 +67,8 @@ export const accountSnapshotSchema = z.strictObject({
   trainerLevel: z.int().positive().nullable(),
   hunt: z
     .strictObject({
-      region: z.string().min(1).max(64),
+      /** `null` quando a fonte não informa a região e o nível não está no catálogo da wiki. */
+      region: z.string().min(1).max(64).nullable(),
       level: z.int().positive(),
       name: z.string().min(1).max(120).nullable(),
     })
@@ -139,6 +140,18 @@ export const accountSnapshotSchema = z.strictObject({
     })
     .nullable(),
   seasonalTypeOfDay: z.string().min(1).max(32).nullable(),
+  /**
+   * Contadores acumulados da conta (não zeram por sessão), usados para medir taxas por hunt:
+   * abates e capturas (soma da Pokédex) e XP total do treinador. Acrescentado em 09/11/2026.
+   */
+  counters: z
+    .strictObject({
+      kills: nonNegativeInt.nullable(),
+      captures: nonNegativeInt.nullable(),
+      xpTrainer: nonNegativeNumber.nullable(),
+    })
+    .nullable()
+    .optional(),
   /**
    * De onde a extensão leu os dados (acrescentado em 09/11/2026): `hunt_extension` = estado do jogo
    * entregue pela extensão "/hunt for PokeIdle"; `dom` = leitura da tela (reserva, mais limitada).

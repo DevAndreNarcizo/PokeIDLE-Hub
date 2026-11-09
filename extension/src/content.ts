@@ -7,10 +7,12 @@
  */
 import type { HuntState } from './hunt/hunt-state.js';
 import { PAGE_BRIDGE_SOURCE } from './hunt/hunt-state.js';
+import { SessionTracker } from './hunt/session-tracker.js';
 import { isReadRequest } from './messages.js';
 import { readSnapshot } from './reader/read-snapshot.js';
 
 let huntState: { state: HuntState; receivedAt: number } | null = null;
+const tracker = new SessionTracker();
 
 window.addEventListener('message', (event: MessageEvent<unknown>) => {
   // Só mensagens da própria página, com o formato esperado. O conteúdo é validado de novo no
@@ -26,12 +28,13 @@ window.addEventListener('message', (event: MessageEvent<unknown>) => {
     return;
   }
   huntState = { state: data.state as HuntState, receivedAt: Date.now() };
+  tracker.update(huntState.state, huntState.receivedAt);
 });
 
 chrome.runtime.onMessage.addListener((message: unknown, _sender, sendResponse) => {
   if (!isReadRequest(message)) {
     return false;
   }
-  sendResponse(readSnapshot(document, message.accountId, new Date(), huntState));
+  sendResponse(readSnapshot(document, message.accountId, new Date(), huntState, tracker.session()));
   return false;
 });

@@ -1,0 +1,219 @@
+{
+  "_fonte": "Amostra REAL do estado da conta (cliente v1.414.1, 09/11/2026), ANONIMIZADA E REDUZIDA pelo hub: sem nick, ids, logins, guild e listas de terceiros. So os campos usados pelo hub.",
+  "id": 1,
+  "nick": "Jogador",
+  "level": 391,
+  "xp": 982522637,
+  "xpNivel": 981097000,
+  "xpProximo": 988682600,
+  "gold": 26258828,
+  "huntSlug": "larvitar",
+  "outlandTier": 1,
+  "noCentro": false,
+  "centroMotivo": null,
+  "centro": null,
+  "activeId": 7,
+  "passe": {
+    "ultimo": 20766,
+    "degrau": 11,
+    "ultimoVip": 0,
+    "vipAte": 0,
+    "ciclos": 0,
+    "total": 11,
+    "vipPegos": 0
+  },
+  "loja": {
+    "vipAte": 1796046380292,
+    "vip": true,
+    "boosts": {
+      "xp": 1793530721424,
+      "loot": 1793873938952,
+      "pokexp": 1794051649946
+    }
+  },
+  "evento": {
+    "id": 143,
+    "xpTreinadorPct": 90,
+    "xpPokemonPct": 90,
+    "farmPct": 5,
+    "minutos": 720,
+    "terminaEm": 1794292321029
+  },
+  "diaSazonal": {
+    "chave": "2026-11-10",
+    "tipo": "FIGHTING",
+    "fim": 1794344400000
+  },
+  "servidorAgora": 1794263747901,
+  "automation": {
+    "autoBallAteCapturar": false,
+    "autoBallSemParar": true,
+    "ballIds": [4],
+    "autoRevive": false,
+    "reviveIds": [205, 206],
+    "autoPotion": true,
+    "potionIds": [203, 204, 70070, 200, 202, 201],
+    "hpLimiar": 0.6,
+    "autoVoltarHunt": true,
+    "desistiuHunt": false
+  },
+  "guildBonusPct": 0,
+  "twitch": {
+    "login": "anonimo",
+    "vinculado": true,
+    "bonus": {
+      "xp": 1794303935176,
+      "captura": 1794276307879,
+      "shiny": 1794272209307
+    },
+    "pct": 15
+  },
+  "kick": {
+    "login": "anonimo",
+    "vinculado": true,
+    "bonus": {
+      "xp": 0,
+      "captura": 0,
+      "shiny": 0
+    },
+    "pct": 15
+  },
+  "bonusXp": {
+    "tr": 3.60525,
+    "pk": 3.60525,
+    "partes": [
+      {
+        "id": "vip",
+        "tr": 1.5,
+        "pk": 1.5,
+        "ate": 1796046380292
+      },
+      {
+        "id": "guildBoost",
+        "tr": 1.1,
+        "pk": 1.1,
+        "ate": 1795734971509
+      },
+      {
+        "id": "evento",
+        "tr": 1.9,
+        "pk": 1.9,
+        "ate": 1794292321029
+      },
+      {
+        "id": "twitch",
+        "tr": 1.15,
+        "pk": 1.15,
+        "ate": 1794303935176
+      }
+    ]
+  },
+  "items": {
+    "2": 1,
+    "201": 6434,
+    "205": 497,
+    "206": 110,
+    "209": 4,
+    "70000": 2
+  },
+  "balls": {
+    "1": 0,
+    "2": 0,
+    "3": 0,
+    "4": 12776,
+    "5": 7
+  },
+  "pokedex": {
+    "1": {
+      "k": 700,
+      "c": 2
+    },
+    "104": {
+      "k": 4568,
+      "c": 17,
+      "sv": 1
+    },
+    "191": {
+      "k": 15809,
+      "c": 141
+    },
+    "246": {
+      "k": 58,
+      "c": 0
+    }
+  },
+  "selvagem": {
+    "slot": 56,
+    "speciesId": 246,
+    "nome": "Larvitar",
+    "looktype": 60246,
+    "tipos": ["ROCK", "GROUND"],
+    "level": 290,
+    "hp": 5740,
+    "maxHp": 17400
+  },
+  "pokemons": [
+    {
+      "id": 3,
+      "speciesId": 6,
+      "nome": "Charizard",
+      "tipos": ["FIRE", "FLYING"],
+      "level": 383,
+      "xp": 927294404,
+      "quality": 1.6,
+      "potencia": 2,
+      "shiny": false,
+      "slot": null,
+      "hp": 9960,
+      "maxHp": 9960,
+      "stats": {
+        "hp": 830,
+        "atk": 808,
+        "def": 773,
+        "spAtk": 955,
+        "spDef": 814,
+        "speed": 968
+      },
+      "ivs": {
+        "hp": 27,
+        "atk": 27,
+        "def": 27,
+        "spAtk": 27,
+        "spDef": 27,
+        "speed": 27
+      }
+    },
+    {
+      "id": 7,
+      "speciesId": 62,
+      "nome": "Poliwrath",
+      "tipos": ["WATER", "FIGHTING"],
+      "level": 99,
+      "xp": 15637887,
+      "quality": 1.764,
+      "potencia": 1,
+      "shiny": false,
+      "slot": 0,
+      "hp": 1605,
+      "maxHp": 2484,
+      "poder": 321,
+      "nota": 3.118,
+      "stats": {
+        "hp": 207,
+        "atk": 151,
+        "def": 235,
+        "spAtk": 112,
+        "spDef": 218,
+        "speed": 160
+      },
+      "ivs": {
+        "hp": 16,
+        "atk": 1,
+        "def": 28,
+        "spAtk": 1,
+        "spDef": 25,
+        "speed": 12
+      }
+    }
+  ]
+}

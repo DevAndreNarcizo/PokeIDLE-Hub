@@ -251,5 +251,6 @@ export function huntLabel(snap: AccountSnapshot | null): string | null {
   if (snap.status === 'center') return 'Centro Pokemon';
   if (!snap.hunt) return null;
   const name = snap.hunt.name ? `${snap.hunt.name} · ` : '';
-  return `${snap.hunt.region} · ${name}hunt nv ${formatInt(snap.hunt.level)}`;
+  const region = snap.hunt.region ? `${snap.hunt.region} · ` : '';
+  return `${region}${name}hunt nv ${formatInt(snap.hunt.level)}`;
 }

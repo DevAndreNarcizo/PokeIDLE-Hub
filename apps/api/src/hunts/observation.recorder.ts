@@ -4,8 +4,9 @@
  * quando há um intervalo maior que {@link MAX_GAP_MS} entre leituras ou quando um contador da
  * sessão diminui (nova sessão do jogo).
  *
- * Premissa a confirmar com a tela real (OPEN_QUESTIONS.md #12): os contadores de `session`
- * (abates, ouro, capturas) são cumulativos dentro da sessão do jogo.
+ * Fontes dos contadores: `counters` (acumulados da conta, vindos do estado do jogo pela /hunt) ou,
+ * na falta, os de `session` (cumulativos na sessão do jogo e zerados pelo botão Reset, confirmado
+ * nas capturas do dono em 09/11/2026). Uma queda de contador abre um trecho novo.
  *
  * @author André Narcizo - andre.narcizo@sysout.com.br
  */
@@ -33,9 +34,17 @@ export class ObservationRecorder {
    */
   async record(snapshot: AccountSnapshot): Promise<void> {
     const { hunt, session } = snapshot;
-    if (snapshot.status !== 'hunting' || !hunt || !session) {
+    const counters = snapshot.counters ?? null;
+    // Sem região conhecida não há como casar com o catálogo; sem contadores não há o que medir.
+    if (snapshot.status !== 'hunting' || !hunt || hunt.region === null || (!session && !counters)) {
       return;
     }
+    const region = hunt.region;
+    // Contadores acumulados da conta têm preferência sobre os da sessão do jogo.
+    const kills = counters?.kills ?? session?.kills ?? null;
+    const captures = counters?.captures ?? session?.captures ?? null;
+    const gold = session?.gold ?? null;
+    const xpTrainer = counters?.xpTrainer ?? null;
     const at = new Date(snapshot.capturedAt);
     const species = snapshot.activePokemon?.species ?? null;
     const latest = await this.prisma.huntObservation.findFirst({
@@ -44,22 +53,24 @@ export class ObservationRecorder {
     });
     const continues =
       latest !== null &&
-      latest.region === hunt.region &&
+      latest.region === region &&
       latest.huntLevel === hunt.level &&
       latest.species === species &&
       at > latest.endedAt &&
       at.getTime() - latest.endedAt.getTime() <= MAX_GAP_MS &&
-      notDecreased(latest.kills, session.kills) &&
-      notDecreased(latest.captures, session.captures) &&
-      notDecreased(latest.gold === null ? null : Number(latest.gold), session.gold);
+      notDecreased(latest.kills, kills) &&
+      notDecreased(latest.captures, captures) &&
+      notDecreased(latest.gold === null ? null : Number(latest.gold), gold) &&
+      notDecreased(latest.xpTrainer === null ? null : Number(latest.xpTrainer), xpTrainer);
 
     const reading = {
       endedAt: at,
-      kills: session.kills,
-      gold: session.gold,
-      captures: session.captures,
-      xpTrainerPerHour: session.xpTrainerPerHour,
-      xpPokemonPerHour: session.xpPokemonPerHour,
+      kills,
+      gold,
+      captures,
+      xpTrainer,
+      xpTrainerPerHour: session?.xpTrainerPerHour ?? null,
+      xpPokemonPerHour: session?.xpPokemonPerHour ?? null,
     };
     if (continues) {
       await this.prisma.huntObservation.update({ where: { id: latest.id }, data: reading });
@@ -69,15 +80,16 @@ export class ObservationRecorder {
       data: {
         ...reading,
         accountId: snapshot.accountId,
-        region: hunt.region,
+        region,
         huntLevel: hunt.level,
         huntName: hunt.name,
         species,
         pokemonLevel: snapshot.activePokemon?.level ?? null,
         startedAt: at,
-        killsStart: session.kills,
-        goldStart: session.gold,
-        capturesStart: session.captures,
+        killsStart: kills,
+        goldStart: gold,
+        capturesStart: captures,
+        xpTrainerStart: xpTrainer,
         source: snapshot.source,
       },
     });

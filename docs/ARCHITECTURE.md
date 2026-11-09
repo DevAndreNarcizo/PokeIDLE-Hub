@@ -67,7 +67,7 @@ export interface AccountSnapshot {
   source: 'extension' | 'manual' | 'api';
   status: 'hunting' | 'center' | 'conflict' | 'offline' | 'unknown';
   trainerLevel: number | null;
-  hunt: { region: string; level: number; name: string | null } | null;
+  hunt: { region: string | null; level: number; name: string | null } | null; // region null: não informada
   team: Array<{ species: string; level: number; hpPct: number }>; // até 5
   activePokemon: {
     species: string; level: number; types: string[];
@@ -88,6 +88,7 @@ export interface AccountSnapshot {
   daily: { battlePassDay: number | null; battlePassClaimedToday: boolean | null; topIdleVotedToday: boolean | null } | null;
   seasonalTypeOfDay: string | null;
   reader?: 'hunt_extension' | 'dom' | null; // fonte da leitura na extensão (09/11/2026)
+  counters?: { kills: number | null; captures: number | null; xpTrainer: number | null } | null; // acumulados (09/11/2026)
 }
 export type AutoState = 'on' | 'off' | 'paused';
 ```

@@ -6,3 +6,5 @@
  */
 export * from './snapshot/account-snapshot.schema.js';
 export * from './game-rules/constants.js';
+export * from './domain/staleness.js';
+export * from './protocol/account-view.js';

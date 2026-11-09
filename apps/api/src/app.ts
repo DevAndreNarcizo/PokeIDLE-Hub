@@ -9,6 +9,8 @@ import express from 'express';
 import type { Express } from 'express';
 import helmet from 'helmet';
 import { pinoHttp } from 'pino-http';
+import { createAccountsRouter } from './accounts/accounts.router.js';
+import type { AccountsRouterDeps } from './accounts/accounts.router.js';
 import { requireAuth } from './auth/auth.middleware.js';
 import { createAuthRouter } from './auth/auth.router.js';
 import type { AuthRouterDeps } from './auth/auth.router.js';
@@ -38,6 +40,8 @@ export interface AppDeps {
   auth?: Omit<AuthRouterDeps, 'logger'>;
   /** Ingestão de snapshots pela ponte. */
   ingest?: IngestRouterDeps;
+  /** Rotas de contas (exigem `auth`). */
+  accounts?: Omit<AccountsRouterDeps, 'requireAuth'>;
 }
 
 /**
@@ -62,11 +66,15 @@ export function createApp(deps: AppDeps): Express {
   app.use(createHealthRouter(deps.healthChecks ?? {}, deps.version));
 
   if (deps.auth) {
+    const authenticated = requireAuth(deps.auth.tokens);
     app.use(createAuthRouter({ ...deps.auth, logger: deps.logger }));
     // Consulta de sessão: o painel usa para saber se precisa mostrar o login.
-    app.get('/auth/session', requireAuth(deps.auth.tokens), (_req, res) => {
+    app.get('/auth/session', authenticated, (_req, res) => {
       res.json({ authenticated: true });
     });
+    if (deps.accounts) {
+      app.use(createAccountsRouter({ ...deps.accounts, requireAuth: authenticated }));
+    }
   }
 
   if (deps.ingest) {

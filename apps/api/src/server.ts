@@ -4,12 +4,16 @@
  *
  * @author André Narcizo - andre.narcizo@sysout.com.br
  */
+import { AccountRepository } from './accounts/account.repository.js';
 import { createApp } from './app.js';
 import { createArgon2Verifier } from './auth/password.js';
 import { PrismaRefreshTokenStore } from './auth/refresh-token.store.js';
 import { AccessTokenService } from './auth/tokens.js';
+import { BridgeTokenService } from './bridge/bridge-token.service.js';
 import { EnvValidationError, loadEnv } from './config/env.js';
 import { createPrismaClient, pingDatabase } from './db/client.js';
+import { HubEvents } from './events/hub-events.js';
+import { SnapshotService } from './ingest/snapshot.service.js';
 import { createLogger } from './logger.js';
 
 const API_VERSION = process.env['npm_package_version'] ?? '0.1.0';
@@ -29,6 +33,10 @@ function main(): void {
 
   const logger = createLogger(env.LOG_LEVEL);
   const prisma = createPrismaClient(env.DATABASE_URL);
+  const events = new HubEvents();
+  const accounts = new AccountRepository(prisma);
+  const snapshots = new SnapshotService(accounts, events);
+  const bridgeTokens = new BridgeTokenService(prisma);
   const app = createApp({
     env,
     logger,
@@ -44,6 +52,8 @@ function main(): void {
         windowSeconds: env.LOGIN_RATE_LIMIT_WINDOW_SECONDS,
       },
     },
+    ingest: { bridgeTokens, sink: snapshots, ratePerMinute: env.INGEST_RATE_PER_MINUTE },
+    accounts: { accounts },
   });
   const server = app.listen(env.PORT, () => {
     logger.info({ port: env.PORT, env: env.NODE_ENV }, 'API no ar');

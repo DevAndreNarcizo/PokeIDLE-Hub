@@ -50,6 +50,10 @@ export class DashboardPage implements OnInit, OnDestroy {
     }
   }
 
+  protected onAck(id: string): void {
+    void this.store.ackAlert(id);
+  }
+
   protected onFocus(accountId: AccountId): void {
     void this.store.focusAccount(accountId);
   }

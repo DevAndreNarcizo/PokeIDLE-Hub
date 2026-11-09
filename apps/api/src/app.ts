@@ -10,6 +10,8 @@ import type { Express } from 'express';
 import helmet from 'helmet';
 import { pinoHttp } from 'pino-http';
 import { createAccountsRouter } from './accounts/accounts.router.js';
+import type { AlertService } from './alerts/alert.service.js';
+import { createAlertsRouter } from './alerts/alerts.router.js';
 import type { AccountsRouterDeps } from './accounts/accounts.router.js';
 import { requireAuth } from './auth/auth.middleware.js';
 import { createAuthRouter } from './auth/auth.router.js';
@@ -50,6 +52,8 @@ export interface AppDeps {
   sync?: SyncControl;
   /** Histórico (exige `auth`). */
   history?: Omit<HistoryRouterDeps, 'requireAuth'>;
+  /** Alertas (exige `auth`). */
+  alerts?: Pick<AlertService, 'list' | 'ack'>;
 }
 
 /**
@@ -85,6 +89,9 @@ export function createApp(deps: AppDeps): Express {
     }
     if (deps.sync) {
       app.use(createSyncRouter(deps.sync, authenticated));
+    }
+    if (deps.alerts) {
+      app.use(createAlertsRouter(deps.alerts, authenticated));
     }
     if (deps.history) {
       app.use(createHistoryRouter({ ...deps.history, requireAuth: authenticated }));

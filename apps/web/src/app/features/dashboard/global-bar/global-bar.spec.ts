@@ -14,6 +14,7 @@ describe('GlobalBar', () => {
     summary: () => ({ hunting: 2, center: 1, conflict: 1, dailyDone: 4, dailyTotal: 8 }),
     setAutoSync: vi.fn((on: boolean) => autoSync.set(on)),
     syncAll: vi.fn(),
+    unackedAlerts: () => 0,
   };
 
   beforeEach(() => {

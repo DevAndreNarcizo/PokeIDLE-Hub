@@ -99,6 +99,24 @@ describe('WebSocket /ws do painel', () => {
     expect(await a.next()).toEqual({ v: 1, type: 'sync.state', state: running });
   });
 
+  it('difunde alert.opened e alert.resolved', async () => {
+    const client = await connect();
+    await client.next();
+    const alert = {
+      id: '1',
+      accountId: 3 as const,
+      kind: 'session_conflict' as const,
+      openedAt: '2026-11-09T12:00:00.000Z',
+      resolvedAt: null,
+      ackedAt: null,
+      payload: {},
+    };
+    events.emit('alert.opened', alert);
+    expect(await client.next()).toEqual({ v: 1, type: 'alert.opened', alert });
+    events.emit('alert.resolved', { ...alert, resolvedAt: '2026-11-09T12:01:00.000Z' });
+    expect(await client.next()).toMatchObject({ type: 'alert.resolved' });
+  });
+
   it('aceita sync.all e responde erro para mensagem inválida', async () => {
     const client = await connect();
     await client.next();

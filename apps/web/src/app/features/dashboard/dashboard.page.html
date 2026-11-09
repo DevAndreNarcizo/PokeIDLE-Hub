@@ -18,6 +18,8 @@
       >
         <hub-account-panel
           [account]="account"
+          [alerts]="store.alertsOf(account.accountId)"
+          (ackAlert)="onAck($event)"
           [compact]="true"
           [now]="now()"
           (focusAccount)="onFocus($event)"
@@ -45,7 +47,13 @@
     }
     <main class="accounts" aria-label="Contas">
       @for (account of store.accounts(); track account.accountId) {
-        <hub-account-panel [account]="account" [now]="now()" (focusAccount)="onFocus($event)" />
+        <hub-account-panel
+          [account]="account"
+          [alerts]="store.alertsOf(account.accountId)"
+          [now]="now()"
+          (focusAccount)="onFocus($event)"
+          (ackAlert)="onAck($event)"
+        />
       } @empty {
         <p class="loading">Carregando contas…</p>
       }

@@ -128,6 +128,22 @@
 </article>
 
 <ng-template #bannerList>
+  @for (alert of extraAlerts(); track alert.id) {
+    <div class="banner tone-warn" role="status" data-banner="alert">
+      <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true">
+        <path
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+          d="M6 8a6 6 0 1 1 12 0c0 7 3 9 3 9H3s3-2 3-9M10 21h4"
+        />
+      </svg>
+      <span>{{ alert.text }}</span>
+      @if (!alert.acked) {
+        <button type="button" class="btn" (click)="ackAlert.emit(alert.id)">Ciente</button>
+      }
+    </div>
+  }
   @for (banner of banners(); track banner.kind) {
     <div class="banner tone-{{ banner.tone }}" role="status" [attr.data-banner]="banner.kind">
       <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true">

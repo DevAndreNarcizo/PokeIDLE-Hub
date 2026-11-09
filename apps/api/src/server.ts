@@ -5,6 +5,7 @@
  * @author André Narcizo - andre.narcizo@sysout.com.br
  */
 import { AccountRepository } from './accounts/account.repository.js';
+import { AlertService } from './alerts/alert.service.js';
 import { createApp } from './app.js';
 import { createArgon2Verifier } from './auth/password.js';
 import { PrismaRefreshTokenStore } from './auth/refresh-token.store.js';
@@ -18,6 +19,7 @@ import { createPrismaClient, pingDatabase } from './db/client.js';
 import { HubEvents } from './events/hub-events.js';
 import { HistoryRepository } from './history/history.repository.js';
 import { SnapshotService } from './ingest/snapshot.service.js';
+import { startAlertClock } from './jobs/alert-clock.job.js';
 import { RetentionJob } from './jobs/retention.job.js';
 import { createLogger } from './logger.js';
 import { RespondingSink } from './sync/responding-sink.js';
@@ -60,6 +62,15 @@ function main(): void {
     logger,
   });
 
+  const alerts = new AlertService({
+    prisma,
+    views: accounts,
+    daily,
+    events,
+    logger,
+    reminderAt: env.DAILY_REMINDER_TIME,
+  });
+
   // Provedores de status (ARCHITECTURE.md §1): a ponte da extensão é a fonte aprovada no S0.2.
   // A entrada manual não é pedida pela sincronização; chega por POST /accounts/:id/snapshot.
   const providers: StatusProvider[] = [];
@@ -73,6 +84,7 @@ function main(): void {
   const sink = new RespondingSink(
     new SnapshotService(accounts, events, () => new Date(), staleMarks, [
       (snapshot) => daily.recordFromSnapshot(snapshot),
+      (snapshot, receivedAt) => alerts.evaluate(snapshot.accountId, receivedAt),
     ]),
     coordinator,
   );
@@ -104,6 +116,7 @@ function main(): void {
     accounts: { accounts, manualSink: sink, focus: bridge },
     sync: coordinator,
     history: { history },
+    alerts,
   });
 
   const panel = new PanelGateway({
@@ -118,12 +131,14 @@ function main(): void {
     logger.info({ port: env.PORT, env: env.NODE_ENV }, 'API no ar');
   });
   retention.start();
+  const stopAlertClock = startAlertClock(alerts);
   attachWebSockets(server, { '/ws': panel, '/bridge': bridge }, logger);
 
   const shutdown = (signal: string): void => {
     logger.info({ signal }, 'encerrando');
     coordinator.dispose();
     retention.stop();
+    stopAlertClock();
     panel.close();
     bridge.close();
     server.close(() => {

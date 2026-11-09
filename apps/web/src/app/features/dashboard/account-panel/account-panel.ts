@@ -7,7 +7,8 @@
  */
 import { NgTemplateOutlet } from '@angular/common';
 import { ChangeDetectionStrategy, Component, computed, input, output } from '@angular/core';
-import type { AccountId, AccountView } from '@pokeidle-hub/shared';
+import type { AccountId, AccountView, AlertView } from '@pokeidle-hub/shared';
+import { alertText } from '../../../core/alert-text';
 import { formatInt, formatRemaining, formatShortClock } from '../../../core/format';
 import {
   automationsOf,
@@ -38,6 +39,10 @@ export class AccountPanel {
   readonly compact = input(false);
   /** Instante de referência para tempos restantes (atualizado pelo painel). */
   readonly now = input<Date>(new Date());
+  /** Alertas abertos da conta (F4-T3). */
+  readonly alerts = input<readonly AlertView[]>([]);
+  /** "Ciente" em um alerta. */
+  readonly ackAlert = output<string>();
   /** Pedido para abrir/focar a janela da conta (F3-T5). */
   readonly focusAccount = output<AccountId>();
 
@@ -71,6 +76,13 @@ export class AccountPanel {
       vote: daily.topIdleVotedToday,
     };
   });
+
+  /** Alertas que os banners não cobrem (boost, diário). */
+  protected readonly extraAlerts = computed(() =>
+    this.alerts()
+      .filter((a) => a.kind === 'boost_expiring' || a.kind === 'daily_pending')
+      .map((a) => ({ id: a.id, text: alertText(a), acked: a.ackedAt !== null })),
+  );
 
   protected requestFocus(): void {
     this.focusAccount.emit(this.account().accountId);

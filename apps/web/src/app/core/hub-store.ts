@@ -5,7 +5,7 @@
  * @author André Narcizo - andre.narcizo@sysout.com.br
  */
 import { Injectable, computed, effect, inject, signal } from '@angular/core';
-import type { AccountId, AccountView, SyncState } from '@pokeidle-hub/shared';
+import type { AccountId, AccountView, AlertView, SyncState } from '@pokeidle-hub/shared';
 import { SYNC_INTERVAL_MS } from '@pokeidle-hub/shared/domain';
 import { ApiClient } from './api.client';
 import { HubSocket } from './hub-socket';
@@ -51,6 +51,9 @@ export class HubStore {
 
   readonly accounts = signal<AccountView[]>([]);
   readonly sync = signal<SyncState>(emptySyncState());
+  /** Alertas abertos. */
+  readonly alerts = signal<AlertView[]>([]);
+  readonly unackedAlerts = computed(() => this.alerts().filter((a) => !a.ackedAt).length);
   readonly loadError = signal<string | null>(null);
   readonly autoSync = signal<boolean>(readAutoSync());
   readonly connection = this.socket.state;
@@ -90,6 +93,15 @@ export class HubStore {
         case 'sync.state':
           this.sync.set(message.state);
           break;
+        case 'alert.opened':
+          this.alerts.update((list) => [
+            message.alert,
+            ...list.filter((a) => a.id !== message.alert.id),
+          ]);
+          break;
+        case 'alert.resolved':
+          this.alerts.update((list) => list.filter((a) => a.id !== message.alert.id));
+          break;
         case 'error':
           break;
       }
@@ -113,6 +125,8 @@ export class HubStore {
       this.accounts.set(accounts);
       const { state } = await this.api.get<{ state: SyncState }>('/sync');
       this.sync.set(state);
+      const { alerts } = await this.api.get<{ alerts: AlertView[] }>('/alerts');
+      this.alerts.set(alerts);
       this.loadError.set(null);
     } catch (error) {
       this.loadError.set(error instanceof Error ? error.message : 'Falha ao carregar');
@@ -135,6 +149,26 @@ export class HubStore {
         this.loadError.set(error instanceof Error ? error.message : 'Falha ao sincronizar');
       }
     }
+  }
+
+  /**
+   * Alertas abertos de uma conta.
+   *
+   * @param id Conta.
+   * @returns Alertas.
+   */
+  alertsOf(id: AccountId): AlertView[] {
+    return this.alerts().filter((a) => a.accountId === id);
+  }
+
+  /**
+   * Marca um alerta como visto.
+   *
+   * @param id Id do alerta.
+   */
+  async ackAlert(id: string): Promise<void> {
+    const { alert } = await this.api.post<{ alert: AlertView }>(`/alerts/${id}/ack`);
+    this.alerts.update((list) => list.map((a) => (a.id === id ? alert : a)));
   }
 
   /** Mensagem passageira para o usuário (ex.: resultado de "Abrir / focar conta"). */

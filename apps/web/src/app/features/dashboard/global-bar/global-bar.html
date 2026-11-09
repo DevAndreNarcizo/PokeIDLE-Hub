@@ -28,6 +28,11 @@
       <li class="pill tone-warn">
         <span class="dot"></span>{{ summary().conflict }} em outro lugar
       </li>
+      @if (store.unackedAlerts(); as count) {
+        <li class="pill tone-warn alerts-pill">
+          <span class="dot"></span>{{ count }} {{ count === 1 ? 'alerta' : 'alertas' }}
+        </li>
+      }
       <li class="pill">
         Diário ·
         <span class="num">{{ summary().dailyDone }} / {{ summary().dailyTotal }}</span> resgatados

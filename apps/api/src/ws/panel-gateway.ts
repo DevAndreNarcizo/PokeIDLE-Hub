@@ -9,7 +9,7 @@ import type { IncomingMessage } from 'node:http';
 import type { Duplex } from 'node:stream';
 import { WebSocket, WebSocketServer } from 'ws';
 import type { RawData } from 'ws';
-import type { AccountView, PanelServerMessage, SyncState } from '@pokeidle-hub/shared';
+import type { AccountView, AlertView, PanelServerMessage, SyncState } from '@pokeidle-hub/shared';
 import { PROTOCOL_VERSION, WS_CLOSE, panelClientMessageSchema } from '@pokeidle-hub/shared';
 import { ACCESS_COOKIE } from '../auth/cookies.js';
 import type { AccessTokenService } from '../auth/tokens.js';
@@ -62,6 +62,12 @@ export class PanelGateway {
   private readonly onSync = (state: SyncState): void => {
     this.broadcast({ v: PROTOCOL_VERSION, type: 'sync.state', state });
   };
+  private readonly onAlertOpened = (alert: AlertView): void => {
+    this.broadcast({ v: PROTOCOL_VERSION, type: 'alert.opened', alert });
+  };
+  private readonly onAlertResolved = (alert: AlertView): void => {
+    this.broadcast({ v: PROTOCOL_VERSION, type: 'alert.resolved', alert });
+  };
 
   /**
    * @param deps Dependências.
@@ -70,6 +76,8 @@ export class PanelGateway {
     this.now = deps.now ?? (() => new Date());
     deps.events.on('account.updated', this.onAccount);
     deps.events.on('sync.state', this.onSync);
+    deps.events.on('alert.opened', this.onAlertOpened);
+    deps.events.on('alert.resolved', this.onAlertResolved);
     this.heartbeat = setInterval(() => this.checkHeartbeat(), HEARTBEAT_MS);
     this.heartbeat.unref();
   }
@@ -100,6 +108,8 @@ export class PanelGateway {
     clearInterval(this.heartbeat);
     this.deps.events.off('account.updated', this.onAccount);
     this.deps.events.off('sync.state', this.onSync);
+    this.deps.events.off('alert.opened', this.onAlertOpened);
+    this.deps.events.off('alert.resolved', this.onAlertResolved);
     for (const client of this.clients) {
       clearTimeout(client.expiryTimer);
       client.socket.terminate();

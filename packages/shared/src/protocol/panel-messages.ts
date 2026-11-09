@@ -6,6 +6,7 @@
  */
 import { z } from 'zod';
 import type { AccountView } from './account-view.js';
+import type { AlertView } from './alert-view.js';
 import type { SyncState } from './sync-state.js';
 
 /**
@@ -35,6 +36,8 @@ export type PanelClientMessage = z.infer<typeof panelClientMessageSchema>;
 export type PanelServerMessage =
   | { v: 1; type: 'account.updated'; account: AccountView }
   | { v: 1; type: 'sync.state'; state: SyncState }
+  | { v: 1; type: 'alert.opened'; alert: AlertView }
+  | { v: 1; type: 'alert.resolved'; alert: AlertView }
   | { v: 1; type: 'error'; code: string; message: string };
 
 /**

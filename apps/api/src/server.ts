@@ -3,6 +3,6 @@
  *
  * @author André Narcizo - andre.narcizo@sysout.com.br
  */
-import { SHARED_PACKAGE_NAME } from '@pokeidle-hub/shared';
+import { GAME_RULES_SOURCE_DATE } from '@pokeidle-hub/shared';
 
-process.stdout.write(`api pronta (${SHARED_PACKAGE_NAME})\n`);
+process.stdout.write(`api pronta (regras de ${GAME_RULES_SOURCE_DATE})\n`);

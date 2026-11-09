@@ -1,6 +1,8 @@
 /**
- * Ponto de entrada do pacote compartilhado. Reexporta tipos, schemas e regras de domínio.
+ * Ponto de entrada do pacote compartilhado. Reexporta o contrato do snapshot e as constantes do
+ * jogo. As regras de domínio puras entram nas Fases 4 e 5.
  *
  * @author André Narcizo - andre.narcizo@sysout.com.br
  */
-export const SHARED_PACKAGE_NAME = '@pokeidle-hub/shared';
+export * from './snapshot/account-snapshot.schema.js';
+export * from './game-rules/constants.js';

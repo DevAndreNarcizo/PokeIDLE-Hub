@@ -78,7 +78,7 @@ export interface AccountSnapshot {
   } | null;
   session: {
     xpTrainerPerHour: number | null; xpPokemonPerHour: number | null;
-    kills: number | null; captures: number | null;
+    kills: number | null; captures: number | null; gold: number | null; // gold: acrescentado em 09/11/2026 (S0.3)
     shinySeen: number | null; shinyCaught: number | null;
     rareDrops: Record<string, number> | null;   // ex.: { bronzeBossToken: 1 }
   } | null;

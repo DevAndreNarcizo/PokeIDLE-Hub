@@ -238,6 +238,8 @@ Hub somente leitura. Sem ações automáticas no jogo. Respeitar que o servidor 
 
 ## 10. Deploy (`srvsysout`)
 
+Implementado em `deploy/` (nginx, systemd, `deploy.sh`, `backup.sh`, `restore.sh`, `healthcheck.sh`); passo a passo em `docs/RUNBOOK.md`.
+
 - Código em `/var/www/pokeidle-hub`.
 - API como serviço (systemd ou pm2) atrás de nginx com TLS; WebSocket com `proxy_set_header Upgrade`.
 - Web servida como estáticos pelo nginx (build Angular), com service worker.

@@ -22,6 +22,8 @@ import { createErrorHandler, notFoundHandler } from './http/errors.js';
 import { createHealthRouter } from './http/health.js';
 import { createHistoryRouter } from './history/history.router.js';
 import type { HistoryRouterDeps } from './history/history.router.js';
+import { createHuntsRouter } from './hunts/hunts.router.js';
+import type { HuntsService } from './hunts/hunts.service.js';
 import { createIngestRouter } from './ingest/ingest.router.js';
 import type { IngestRouterDeps } from './ingest/ingest.router.js';
 import type { HealthCheck } from './http/health.js';
@@ -56,6 +58,8 @@ export interface AppDeps {
   history?: Omit<HistoryRouterDeps, 'requireAuth'>;
   /** Alertas (exige `auth`). */
   alerts?: Pick<AlertService, 'list' | 'ack'>;
+  /** Hunts por conta (exige `auth`). */
+  hunts?: Pick<HuntsService, 'list'>;
   /** Web Push (exige `auth`); `service` nulo = desativado. */
   push?: {
     service: Pick<PushService, 'subscribe' | 'unsubscribe' | 'sendTest'> | null;
@@ -99,6 +103,9 @@ export function createApp(deps: AppDeps): Express {
     }
     if (deps.alerts) {
       app.use(createAlertsRouter(deps.alerts, authenticated));
+    }
+    if (deps.hunts) {
+      app.use(createHuntsRouter(deps.hunts, authenticated));
     }
     if (deps.push) {
       app.use(createPushRouter(deps.push.service, deps.push.publicKey, authenticated));

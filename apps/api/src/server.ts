@@ -21,6 +21,8 @@ import { HistoryRepository } from './history/history.repository.js';
 import { SnapshotService } from './ingest/snapshot.service.js';
 import { startAlertClock } from './jobs/alert-clock.job.js';
 import { RetentionJob } from './jobs/retention.job.js';
+import { HuntsService } from './hunts/hunts.service.js';
+import { ObservationRecorder } from './hunts/observation.recorder.js';
 import { createLogger } from './logger.js';
 import { PushService } from './push/push.service.js';
 import { WebPushSender } from './push/web-push.sender.js';
@@ -58,6 +60,7 @@ function main(): void {
   const bridgeTokens = new BridgeTokenService(prisma);
   const history = new HistoryRepository(prisma);
   const daily = new DailyRepository(prisma);
+  const observations = new ObservationRecorder(prisma);
   const retention = new RetentionJob({
     history,
     retentionDays: env.SNAPSHOT_RETENTION_DAYS,
@@ -111,6 +114,7 @@ function main(): void {
   const sink = new RespondingSink(
     new SnapshotService(accounts, events, () => new Date(), staleMarks, [
       (snapshot) => daily.recordFromSnapshot(snapshot),
+      (snapshot) => observations.record(snapshot),
       (snapshot, receivedAt) => alerts.evaluate(snapshot.accountId, receivedAt),
     ]),
     coordinator,
@@ -144,6 +148,7 @@ function main(): void {
     sync: coordinator,
     history: { history },
     alerts,
+    hunts: new HuntsService(prisma, accounts),
     push: { service: push, publicKey: vapidReady ? (env.VAPID_PUBLIC_KEY ?? null) : null },
   });
 

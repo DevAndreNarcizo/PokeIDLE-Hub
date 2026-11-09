@@ -102,26 +102,33 @@ model HuntCatalog {
 }
 
 /// Medições reais por hunt, lidas pela extensão (decisão do dono no spike S0.3).
+/// Uma linha por trecho contínuo caçando na mesma hunt com o mesmo pokemon ativo.
+/// `*_start` guardam os contadores da sessão no início; os campos sem sufixo, a última leitura.
 model HuntObservation {
-  id           BigInt   @id @default(autoincrement())
-  accountId    Int      @map("account_id") @db.SmallInt
-  region       String
-  huntLevel    Int      @map("hunt_level")
-  huntName     String?  @map("hunt_name")
-  species      String?
-  pokemonLevel Int?     @map("pokemon_level")
-  startedAt    DateTime @map("started_at") @db.Timestamptz
-  endedAt      DateTime @map("ended_at") @db.Timestamptz
-  kills        Int?
-  xpTrainer    Decimal? @map("xp_trainer") @db.Decimal
-  xpPokemon    Decimal? @map("xp_pokemon") @db.Decimal
-  gold         Decimal? @db.Decimal
-  captures     Int?
-  source       String
+  id               BigInt   @id @default(autoincrement())
+  accountId        Int      @map("account_id") @db.SmallInt
+  region           String
+  huntLevel        Int      @map("hunt_level")
+  huntName         String?  @map("hunt_name")
+  species          String?
+  pokemonLevel     Int?     @map("pokemon_level")
+  startedAt        DateTime @map("started_at") @db.Timestamptz
+  endedAt          DateTime @map("ended_at") @db.Timestamptz
+  killsStart       Int?     @map("kills_start")
+  kills            Int?
+  goldStart        Decimal? @map("gold_start") @db.Decimal
+  gold             Decimal? @db.Decimal
+  capturesStart    Int?     @map("captures_start")
+  captures         Int?
+  /// XP/h informado pelo jogo na última leitura.
+  xpTrainerPerHour Decimal? @map("xp_trainer_per_hour") @db.Decimal
+  xpPokemonPerHour Decimal? @map("xp_pokemon_per_hour") @db.Decimal
+  source           String
 
   account Account @relation(fields: [accountId], references: [id])
 
   @@index([region, huntLevel, endedAt(sort: Desc)], map: "hunt_observations_hunt")
+  @@index([accountId, endedAt(sort: Desc)], map: "hunt_observations_account")
   @@map("hunt_observations")
 }
 

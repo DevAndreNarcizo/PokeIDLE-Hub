@@ -6,3 +6,4 @@
  */
 export * from './staleness.js';
 export * from '../game-rules/constants.js';
+export * from './calendar.js';

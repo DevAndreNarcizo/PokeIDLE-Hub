@@ -11,3 +11,4 @@ export * from './protocol/account-view.js';
 export * from './protocol/sync-state.js';
 export * from './protocol/panel-messages.js';
 export * from './protocol/bridge-messages.js';
+export * from './domain/calendar.js';

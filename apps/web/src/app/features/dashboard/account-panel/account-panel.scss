@@ -63,7 +63,7 @@
 .left,
 .right {
   display: grid;
-  gap: 10px;
+  gap: 8px;
   align-content: start;
   min-width: 0;
 }
@@ -103,7 +103,7 @@
 /* No grid 2×2 a altura é limitada: o cartão da sessão fica mais baixo. */
 :host-context(.grid-2x2) .session {
   aspect-ratio: auto;
-  height: 230px;
+  height: 220px;
   min-height: 0;
 }
 

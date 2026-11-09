@@ -29,6 +29,7 @@
 .sub {
   color: var(--muted);
   font-size: 12px;
+  white-space: nowrap;
 }
 
 .mark {
@@ -51,7 +52,7 @@
 .pills,
 .events {
   display: flex;
-  flex-wrap: wrap;
+  flex-wrap: nowrap;
   gap: 8px;
   margin: 0;
   padding: 0;
@@ -64,15 +65,25 @@
   border-left: 1px solid var(--border);
   min-width: 0;
 
+  flex: 1;
+  overflow: hidden;
+
   li {
     display: grid;
     min-width: 0;
+    max-width: 280px;
+  }
+
+  strong,
+  .label {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
   }
 
   strong {
     font-weight: 500;
     font-size: 13px;
-    white-space: nowrap;
   }
 
   .urgent strong {

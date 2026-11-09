@@ -58,3 +58,36 @@
     padding-top: 12px;
   }
 }
+
+.mobile-events {
+  padding: 0 16px 24px;
+
+  h2 {
+    margin-bottom: 8px;
+    font-family: var(--font-body);
+    font-weight: 400;
+  }
+
+  ul {
+    display: grid;
+    gap: 6px;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  li {
+    display: grid;
+    padding: 10px 12px;
+    border-radius: var(--radius-card);
+    background: var(--surface);
+  }
+
+  strong {
+    font-weight: 500;
+  }
+
+  .urgent strong {
+    color: var(--warn);
+  }
+}

@@ -35,7 +35,7 @@
     </ul>
     @if (events().length) {
       <ul class="events" aria-label="Próximos eventos">
-        @for (event of events(); track event.id) {
+        @for (event of events().slice(0, 4); track event.id) {
           <li [class.urgent]="event.urgent">
             <span class="label">{{ event.label }}</span>
             <strong>{{ event.detail }}</strong>

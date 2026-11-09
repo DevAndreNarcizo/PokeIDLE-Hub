@@ -7,6 +7,7 @@
 import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
 import type { OnDestroy, OnInit } from '@angular/core';
 import type { AccountId } from '@pokeidle-hub/shared';
+import { UpcomingEvents } from '../../core/events';
 import { HubStore } from '../../core/hub-store';
 import { Viewport } from '../../core/viewport';
 import { ConnectionBanner } from '../../shared/connection-banner';
@@ -29,6 +30,7 @@ import { GlobalBar } from './global-bar/global-bar';
 export class DashboardPage implements OnInit, OnDestroy {
   protected readonly store = inject(HubStore);
   protected readonly viewport = inject(Viewport);
+  protected readonly events = inject(UpcomingEvents).list;
   /** Relógio para tempos restantes (boosts), atualizado a cada 30 s. */
   protected readonly now = signal(new Date());
   /** Conta em foco no celular. */

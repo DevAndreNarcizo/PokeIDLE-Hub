@@ -72,7 +72,14 @@
               "buildTarget": "web:build:development"
             }
           },
-          "defaultConfiguration": "development"
+          "defaultConfiguration": "development",
+          "options": {
+            "prebundle": {
+              "exclude": [
+                "@pokeidle-hub/shared"
+              ]
+            }
+          }
         },
         "test": {
           "builder": "@angular/build:unit-test"

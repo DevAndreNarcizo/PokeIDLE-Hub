@@ -24,10 +24,21 @@
         />
       </section>
     }
+    <section class="mobile-events" aria-labelledby="events-title">
+      <h2 id="events-title" class="label">Próximos eventos</h2>
+      <ul>
+        @for (event of events(); track event.id) {
+          <li [class.urgent]="event.urgent">
+            <span class="label">{{ event.label }}</span>
+            <strong>{{ event.detail }}</strong>
+          </li>
+        }
+      </ul>
+    </section>
   </div>
 } @else {
   <div class="root" [class.grid-2x2]="viewport.grid()">
-    <hub-global-bar />
+    <hub-global-bar [events]="events()" />
     <hub-connection-banner />
     @if (store.notice(); as notice) {
       <p class="notice" role="status">{{ notice }}</p>

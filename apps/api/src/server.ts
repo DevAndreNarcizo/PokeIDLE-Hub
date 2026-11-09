@@ -23,6 +23,7 @@ import { startAlertClock } from './jobs/alert-clock.job.js';
 import { RetentionJob } from './jobs/retention.job.js';
 import { HuntsService } from './hunts/hunts.service.js';
 import { ObservationRecorder } from './hunts/observation.recorder.js';
+import { outlandRares } from './hunts/rares.js';
 import { createLogger } from './logger.js';
 import { PushService } from './push/push.service.js';
 import { WebPushSender } from './push/web-push.sender.js';
@@ -148,7 +149,7 @@ function main(): void {
     sync: coordinator,
     history: { history },
     alerts,
-    hunts: new HuntsService(prisma, accounts),
+    hunts: new HuntsService(prisma, accounts, outlandRares),
     push: { service: push, publicKey: vapidReady ? (env.VAPID_PUBLIC_KEY ?? null) : null },
   });
 

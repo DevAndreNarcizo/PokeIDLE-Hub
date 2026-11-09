@@ -8,6 +8,7 @@ import { AccessTokenService } from '../src/auth/tokens.js';
 import type { PrismaClient } from '../src/db/client.js';
 import { HuntsService } from '../src/hunts/hunts.service.js';
 import { ObservationRecorder } from '../src/hunts/observation.recorder.js';
+import { outlandRares } from '../src/hunts/rares.js';
 import { TEST_DATABASE_URL, resetDatabase, testPrisma } from './support/db.js';
 import { illustrativeSnapshot } from './support/snapshots.js';
 import { TEST_ENV_VARS, silentLogger } from './helpers.js';
@@ -155,6 +156,34 @@ describe.skipIf(!TEST_DATABASE_URL)('medições e lista de hunts (PostgreSQL)', 
     const res = await hunts.list(1, 'rares', 'Outland', new Date(T0 + 31 * 60_000));
     expect(res.hunts.map((h) => h.name).sort()).toEqual(['Outland 1', 'Outland 2', 'Outland 3']);
     expect(res.hunts.every((h) => h.killsPerHour === 800 && h.shinyHours === null)).toBe(true);
+  });
+
+  it('raros/h por Outland liberada: multiplicador da tabela §4 sobre os abates medidos', async () => {
+    const withRares = new HuntsService(prisma, accounts, outlandRares);
+    // 1.000 abates/h medidos numa Outland; treinador nv 4.000 libera as Outlands 1 a 4.
+    await feed(
+      ...series(
+        0,
+        30,
+        { kills: 1000 / 60 },
+        { region: 'Outland', level: 150, trainerLevel: 4_000 },
+      ),
+    );
+    const res = await withRares.list(1, 'rares', 'Outland', new Date(T0 + 31 * 60_000));
+    const token = Object.fromEntries(res.hunts.map((h) => [h.name, h.rares?.bronzeBossToken]));
+    expect(Object.keys(token).sort()).toEqual(['Outland 1', 'Outland 2', 'Outland 3', 'Outland 4']);
+    expect(token['Outland 1']).toBeCloseTo(0.5, 6); // 0,05%
+    expect(token['Outland 2']).toBeCloseTo(0.625, 6); // 0,0625%
+    expect(token['Outland 4']).toBeCloseTo(1.0, 6); // 0,10%
+    expect(res.hunts.find((h) => h.name === 'Outland 4')?.rares?.keyFragment).toBeCloseTo(0.01, 9);
+    // Aba Raros/h ordena pelo token (Outland 4 primeiro).
+    expect(res.hunts[0]?.name).toBe('Outland 4');
+    // Fora da Outland não há raros.
+    expect(
+      (await withRares.list(1, 'rares', 'Johto', new Date(T0 + 31 * 60_000))).hunts.every(
+        (h) => h.rares === null,
+      ),
+    ).toBe(true);
   });
 
   it('estados vazios: sem ficha e em conflito', async () => {

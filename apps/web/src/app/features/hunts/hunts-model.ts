@@ -83,7 +83,13 @@ const NO_MEASURE = 'sem medição ainda';
  */
 export function toRowView(row: HuntRow): HuntRowView {
   const title = row.name ?? `${row.region} · hunt nv ${formatInt(row.level)}`;
-  const perHour = (v: number | null) => (v === null ? '—' : formatDecimal(v));
+  // Taxas muito baixas (fragmentos) ficam ilegíveis por hora: mostra o intervalo esperado.
+  const perHour = (v: number | null) =>
+    v === null
+      ? '—'
+      : v > 0 && v < 0.1
+        ? `1 a cada ${formatInt(Math.round(1 / v))} h`
+        : formatDecimal(v);
   return {
     key: `${row.region}|${row.level}`,
     title,

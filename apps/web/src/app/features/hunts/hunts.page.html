@@ -36,7 +36,8 @@
             <div class="mon">
               <span class="avatar" aria-hidden="true">{{ p.initial }}</span>
               <div>
-                <strong>{{ p.species }}</strong> <small>{{ p.level }}</small>
+                <strong>{{ p.species }}</strong
+                >&nbsp;<small>{{ p.level }}</small>
                 <div class="types">
                   @for (type of p.types; track type) {
                     <span class="type" [attr.style]="typeStyle(type)">{{ type }}</span>

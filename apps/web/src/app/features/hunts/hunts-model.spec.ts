@@ -52,6 +52,22 @@ describe('linhas da tabela de hunts', () => {
     expect(v.measured).toBe('medido em 1,5 h com Ilustrativo');
   });
 
+  it('raros: taxa baixa vira "1 a cada N h"', () => {
+    const v = toRowView(
+      row({
+        region: 'Outland',
+        outland: 1,
+        rares: {
+          bronzeBossToken: 0.36,
+          keyFragment: 0.0036,
+          shinyStoneFragment: 0,
+          bicycleFragment: null,
+        },
+      }),
+    );
+    expect(v.rares).toEqual({ token: '0,4', key: '1 a cada 278 h', stone: '0', bike: '—' });
+  });
+
   it('Outland: shiny não rola', () => {
     expect(toRowView(row({ region: 'Outland', name: 'Outland 1', outland: 1 })).shiny).toBe(
       'não rola',
@@ -63,7 +79,10 @@ describe('linhas da tabela de hunts', () => {
       row({ xpPerHour: 1_000, measured: { hours: 1, samples: 1, lastAt: '', species: null } }),
       row({ region: 'Outland' }),
     ];
-    const chips = regionChips(rows, 'xp').map((c) => [c.label, c.best?.replace(/\s/g, ' ') ?? null]);
+    const chips = regionChips(rows, 'xp').map((c) => [
+      c.label,
+      c.best?.replace(/\s/g, ' ') ?? null,
+    ]);
     expect(chips).toEqual([
       ['Todas', '1 mil'],
       ['Johto', '1 mil'],

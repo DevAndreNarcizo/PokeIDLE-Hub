@@ -8,7 +8,7 @@ Mantenha esta lista atualizada. Cada item tem dono e impacto. Não inventar resp
 | --- | --- | --- | --- | --- | --- |
 | 1 | O `pokeidle.io/app` permite ser embutido em iframe? | Claude Code | Define viewport embutido x janela dedicada | F0-T1 | **Respondida: não** (`X-Frame-Options: DENY`, `frame-ancestors 'none'`). Ver `spikes/S0.1.md` |
 | 2 | Existe API pública ou WebSocket de leitura do jogo? | Dono (Discord `#open-ticket`) | Define a fonte de status | F0-T2 | Sem API pública nos Termos/site; WS do cliente é privado. Confirmar no Discord (perguntas em `spikes/S0.2.md`) |
-| 3 | A extensão oficial de automação (`#how-to-play`) pode servir de ponte? | Dono | Evita escrever extensão própria | F0-T2 | Aberta: existe e é permitida (Termos §5); falta ver se expõe dados |
+| 3 | A extensão oficial de automação (`#how-to-play`) pode servir de ponte? | Dono | Evita escrever extensão própria | F0-T2 | Aberta: existe e é permitida (Termos §5); falta ver se expõe dados. A "/hunt for PokeIdle" (comunidade, não oficial) foi analisada em `spikes/S0.2.md` |
 | 4 | Como o site da comunidade calcula XP/h, ouro/h, abates/h, "mata em" e risco? | Claude Code + dono | Define a Fase 5 | F0-T3 | Dono quer dados diretos: hub usa métricas **medidas** pela extensão por hunt. Projeção de hunts não caçadas segue aberta (`spikes/S0.3.md`) |
 | 5 | Qual a lista completa de hunts e seus níveis (Kanto, Hoenn e demais)? | Dono (Mapa em modo Lista, CSV da Pokedex) | Catálogo de hunts | F5-T1 | Aberta |
 | 6 | Como obter a tipagem do dia sem modelar o jogo? | Claude Code | Alerta e cálculo com Dia Sazonal | Backlog | Aberta: candidata a leitura pela extensão, se aparecer na tela |
@@ -22,3 +22,4 @@ Mantenha esta lista atualizada. Cada item tem dono e impacto. Não inventar resp
 | 14 | XP por abate, ouro por abate (fórmula), respawn e caminhada por hunt | Dono (equipe do jogo) | Habilita XP/h, ouro/h, abates/h | F5 | Aberta |
 | 15 | Limite de contas dos Termos (4 por pessoa, 4 conectadas por rede, mais de 4 no mesmo aparelho = multiconta) | Dono | Risco de banimento permanente | Contínuo | **Fato registrado.** O projeto usa exatamente o limite; o hub nunca cria nem abre uma 5ª conta |
 | 16 | Em que idioma a interface do jogo fica em cada perfil? | Dono | O leitor só conhece o texto em português ("Conta aberta em outro lugar") | F2-T5 | Aberta |
+| 17 | Por que a "/hunt for PokeIdle" não funciona no Brave? A mesma técnica (ouvir o WebSocket da aba) serviria à nossa ponte | Dono (console do Brave) | Define se a ponte troca a leitura do DOM pela escuta do WebSocket | Antes de mapear a tela | Aberta |

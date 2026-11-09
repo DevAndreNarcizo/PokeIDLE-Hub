@@ -34,6 +34,11 @@ const envSchema = z.object({
   LOGIN_RATE_LIMIT_WINDOW_SECONDS: z.coerce.number().int().min(10).max(86_400).default(900),
   /** Snapshots aceitos por conta por minuto em `POST /ingest/snapshot`. */
   INGEST_RATE_PER_MINUTE: z.coerce.number().int().min(1).max(600).default(60),
+  /** Horário (Brasília) a partir do qual o diário pendente vira alerta (ARCHITECTURE.md §8). */
+  DAILY_REMINDER_TIME: z
+    .string()
+    .regex(/^([01]\d|2[0-3]):[0-5]\d$/, 'use HH:MM')
+    .default('18:00'),
   /** Dias de histórico de snapshots mantidos (ARCHITECTURE.md §6). */
   SNAPSHOT_RETENTION_DAYS: z.coerce.number().int().min(1).max(365).default(30),
 });

@@ -13,6 +13,7 @@ import { BridgeGateway } from './bridge/bridge-gateway.js';
 import { BridgeTokenService } from './bridge/bridge-token.service.js';
 import { EnvValidationError, loadEnv } from './config/env.js';
 import type { Env } from './config/env.js';
+import { DailyRepository } from './daily/daily.repository.js';
 import { createPrismaClient, pingDatabase } from './db/client.js';
 import { HubEvents } from './events/hub-events.js';
 import { HistoryRepository } from './history/history.repository.js';
@@ -52,6 +53,7 @@ function main(): void {
   const tokens = new AccessTokenService(env.HUB_JWT_SECRET, env.ACCESS_TOKEN_TTL_SECONDS);
   const bridgeTokens = new BridgeTokenService(prisma);
   const history = new HistoryRepository(prisma);
+  const daily = new DailyRepository(prisma);
   const retention = new RetentionJob({
     history,
     retentionDays: env.SNAPSHOT_RETENTION_DAYS,
@@ -69,7 +71,9 @@ function main(): void {
     logger,
   });
   const sink = new RespondingSink(
-    new SnapshotService(accounts, events, () => new Date(), staleMarks),
+    new SnapshotService(accounts, events, () => new Date(), staleMarks, [
+      (snapshot) => daily.recordFromSnapshot(snapshot),
+    ]),
     coordinator,
   );
   const bridge = new BridgeGateway({

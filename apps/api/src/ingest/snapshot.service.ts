@@ -11,6 +11,13 @@ import type { StaleMarks } from '../sync/stale-marks.js';
 import type { IngestOutcome, SnapshotSink } from './snapshot-sink.js';
 
 /**
+ * Passo extra executado após gravar um snapshot novo.
+ *
+ * @author André Narcizo - andre.narcizo@sysout.com.br
+ */
+export type SnapshotHook = (snapshot: AccountSnapshot, receivedAt: Date) => Promise<void>;
+
+/**
  * Serviço de ingestão persistente.
  *
  * @author André Narcizo - andre.narcizo@sysout.com.br
@@ -21,12 +28,14 @@ export class SnapshotService implements SnapshotSink {
    * @param events Barramento de eventos.
    * @param now Relógio injetável.
    * @param staleMarks Marcas de obsoleto, limpas quando chega dado novo.
+   * @param onStored Passos executados depois de gravar um snapshot novo (diário, alertas).
    */
   constructor(
     private readonly accounts: AccountRepository,
     private readonly events: HubEvents,
     private readonly now: () => Date = () => new Date(),
     private readonly staleMarks?: StaleMarks,
+    private readonly onStored: readonly SnapshotHook[] = [],
   ) {}
 
   /** @inheritdoc */
@@ -39,6 +48,9 @@ export class SnapshotService implements SnapshotSink {
     const view = await this.accounts.getView(snapshot.accountId, this.now());
     if (view) {
       this.events.emit('account.updated', view);
+    }
+    for (const hook of this.onStored) {
+      await hook(snapshot, receivedAt);
     }
     return 'stored';
   }

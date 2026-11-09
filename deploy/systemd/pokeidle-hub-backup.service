@@ -1,0 +1,15 @@
+# Backup do banco do PokeIdle Hub (disparado pelo timer diário).
+# @author André Narcizo - andre.narcizo@sysout.com.br
+[Unit]
+Description=PokeIdle Hub: backup do PostgreSQL
+After=postgresql.service
+
+[Service]
+Type=oneshot
+User=pokeidle
+Group=pokeidle
+ExecStart=/var/www/pokeidle-hub/deploy/backup.sh
+NoNewPrivileges=yes
+PrivateTmp=yes
+ProtectSystem=strict
+ReadWritePaths=/var/backups/pokeidle-hub

@@ -1,0 +1,12 @@
+# Backup diário às 03:17 (horário do servidor), com atraso aleatório de até 10 min.
+# @author André Narcizo - andre.narcizo@sysout.com.br
+[Unit]
+Description=PokeIdle Hub: backup diário
+
+[Timer]
+OnCalendar=*-*-* 03:17:00
+RandomizedDelaySec=600
+Persistent=true
+
+[Install]
+WantedBy=timers.target

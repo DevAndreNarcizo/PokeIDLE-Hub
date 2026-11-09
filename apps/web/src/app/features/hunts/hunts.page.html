@@ -1,0 +1,227 @@
+<div class="page">
+  <header class="top">
+    <div>
+      <a class="eyebrow" routerLink="/">← PokeIdle Hub · Hunts</a>
+      <h1>Onde caçar?</h1>
+    </div>
+    <div class="accounts" role="group" aria-label="Conta">
+      @for (acc of accountTabs(); track acc.id) {
+        <button
+          type="button"
+          class="acc tone-{{ acc.tone }}"
+          [class.active]="acc.id === accountId()"
+          [attr.aria-pressed]="acc.id === accountId()"
+          (click)="selectAccount(acc.id)"
+        >
+          <span class="dot" aria-hidden="true"></span><strong>{{ acc.name }}</strong>
+          <small>{{ acc.level }}</small>
+        </button>
+      }
+    </div>
+  </header>
+
+  @if (error()) {
+    <p class="error" role="alert">{{ error() }}</p>
+  }
+
+  <div class="body">
+    <aside class="card sheet" aria-labelledby="sheet-title">
+      <h2 id="sheet-title"><span class="step">1</span> Pokemon ativo e nível do treinador</h2>
+      @if (data(); as d) {
+        @if (d.state === 'ok') {
+          <p class="ok">Ficha sincronizada com a conta. Não precisa colar nada.</p>
+          <span class="label">Nível do treinador</span>
+          <div class="field num">nv {{ d.trainerLevel }}</div>
+          @if (pokemon(); as p) {
+            <div class="mon">
+              <span class="avatar" aria-hidden="true">{{ p.initial }}</span>
+              <div>
+                <strong>{{ p.species }}</strong> <small>{{ p.level }}</small>
+                <div class="types">
+                  @for (type of p.types; track type) {
+                    <span class="type" [attr.style]="typeStyle(type)">{{ type }}</span>
+                  }
+                </div>
+                <small class="muted">{{ p.line }}</small>
+              </div>
+            </div>
+            <dl class="stats">
+              @for (s of p.stats; track s.label) {
+                <div>
+                  <dt>{{ s.label }}</dt>
+                  <dd class="num">{{ s.value }}</dd>
+                  <dd class="iv">{{ s.iv }}</dd>
+                </div>
+              }
+            </dl>
+          } @else {
+            <p class="muted">A extensão ainda não lê a ficha do pokemon ativo.</p>
+          }
+        }
+      }
+    </aside>
+
+    <section class="card list" aria-labelledby="list-title">
+      <div class="list-head">
+        <h2 id="list-title"><span class="step">2</span> Onde caçar?</h2>
+        <small class="muted">Só hunts liberadas para o nível do treinador</small>
+      </div>
+
+      @switch (data()?.state) {
+        @case ('no_sheet') {
+          <div class="empty" role="status">
+            <strong>Sem ficha sincronizada para esta conta.</strong>
+            <p>Abra o jogo no perfil do Brave desta conta e sincronize.</p>
+            <button type="button" class="btn btn--primary" (click)="sync()">
+              Sincronizar tudo
+            </button>
+          </div>
+        }
+        @case ('conflict') {
+          <div class="empty" role="status">
+            <strong>Conta aberta em outro lugar.</strong>
+            <p>
+              A sessão do hub está pausada. Volte a jogar na janela desta conta para ver as hunts.
+            </p>
+            <button type="button" class="btn btn--primary" (click)="focusAccount()">
+              Abrir / focar conta
+            </button>
+          </div>
+        }
+        @default {
+          <div class="tabs" role="tablist" aria-label="Métrica">
+            @for (tab of tabs; track tab.id) {
+              <button
+                type="button"
+                role="tab"
+                [attr.aria-selected]="tab.id === metric()"
+                [class.active]="tab.id === metric()"
+                (click)="selectMetric(tab.id)"
+              >
+                {{ tab.label }}
+              </button>
+            }
+          </div>
+
+          <div class="chips" role="group" aria-label="Região">
+            <span class="label">REGIÃO</span>
+            @for (chip of chips(); track chip.label) {
+              <button
+                type="button"
+                class="chip"
+                [class.active]="chip.id === region()"
+                [attr.aria-pressed]="chip.id === region()"
+                (click)="region.set(chip.id)"
+              >
+                {{ chip.label }}
+                @if (chip.best) {
+                  <small>{{ chip.best }}</small>
+                }
+              </button>
+            }
+          </div>
+          <p class="note">{{ note() }}</p>
+
+          <div class="table-wrap" [attr.aria-busy]="loading()">
+            @if (metric() === 'rares') {
+              <table>
+                <thead>
+                  <tr>
+                    <th scope="col">Outland</th>
+                    <th scope="col">Abates/h</th>
+                    <th scope="col" class="metric">Boss Token/h</th>
+                    <th scope="col">Frag. Chave/h</th>
+                    <th scope="col">Frag. Shiny Stone/h</th>
+                    <th scope="col">Frag. Bicicleta/h</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  @for (row of rows(); track row.key) {
+                    <tr>
+                      <th scope="row">
+                        <span class="avatar sm" aria-hidden="true">{{ row.initial }}</span>
+                        <span
+                          ><strong>{{ row.title }}</strong
+                          ><small>{{ row.level }}</small></span
+                        >
+                      </th>
+                      <td>{{ row.kills }}</td>
+                      <td>
+                        <span class="badge">{{ row.rares?.token ?? '—' }}</span>
+                      </td>
+                      <td>{{ row.rares?.key ?? '—' }}</td>
+                      <td>{{ row.rares?.stone ?? '—' }}</td>
+                      <td>{{ row.rares?.bike ?? '—' }}</td>
+                    </tr>
+                  } @empty {
+                    <tr>
+                      <td colspan="6" class="muted">Nenhuma Outland liberada para este nível.</td>
+                    </tr>
+                  }
+                </tbody>
+              </table>
+            } @else {
+              <table>
+                <thead>
+                  <tr>
+                    <th scope="col">Hunt</th>
+                    <th scope="col" [class.metric]="metric() === 'xp'">XP/h</th>
+                    <th scope="col" [class.metric]="metric() === 'gold'">Ouro/h</th>
+                    <th scope="col">Abates/h</th>
+                    <th scope="col">Mata em</th>
+                    <th scope="col">Risco</th>
+                    <th scope="col" [class.metric]="metric() === 'shiny'">Shiny</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  @for (row of rows(); track row.key) {
+                    <tr>
+                      <th scope="row">
+                        <span class="avatar sm" aria-hidden="true">{{ row.initial }}</span>
+                        <span>
+                          <strong>{{ row.title }}</strong>
+                          <small
+                            >{{ row.level }} · <span class="region">{{ row.region }}</span></small
+                          >
+                          @if (row.measured) {
+                            <small class="muted">{{ row.measured }}</small>
+                          }
+                        </span>
+                      </th>
+                      <td>
+                        <span [class.badge]="metric() === 'xp'">{{ row.xp }}</span>
+                      </td>
+                      <td>
+                        <span [class.badge]="metric() === 'gold'">{{ row.gold }}</span>
+                      </td>
+                      <td>{{ row.kills }}</td>
+                      <td title="Sem fonte de cálculo ainda">{{ row.killTime }}</td>
+                      <td title="Sem fonte de cálculo ainda">{{ row.risk }}</td>
+                      <td>
+                        <span [class.badge]="metric() === 'shiny'">{{ row.shiny }}</span>
+                      </td>
+                    </tr>
+                  } @empty {
+                    <tr>
+                      <td colspan="7" class="muted">
+                        Nenhuma hunt conhecida liberada para este nível.
+                      </td>
+                    </tr>
+                  }
+                </tbody>
+              </table>
+            }
+          </div>
+          @if (data()?.gaps?.length) {
+            <p class="note gaps">
+              Lacunas do catálogo:
+              @for (gap of data()?.gaps; track gap.region + gap.reason; let last = $last) {
+                {{ gap.region }} ({{ gap.reason }}){{ last ? '.' : ';' }}
+              }
+            </p>
+          }
+        }
+      }
+    </section>
+  </div>
+</div>

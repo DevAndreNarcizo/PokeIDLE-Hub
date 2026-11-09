@@ -23,5 +23,11 @@ export const routes: Routes = [
     loadComponent: () => import('./features/dashboard/dashboard.page').then((m) => m.DashboardPage),
     title: 'PokeIdle Hub',
   },
+  {
+    path: 'hunts',
+    canActivate: [authGuard],
+    loadComponent: () => import('./features/hunts/hunts.page').then((m) => m.HuntsPage),
+    title: 'Onde caçar? · PokeIdle Hub',
+  },
   { path: '**', redirectTo: '' },
 ];

@@ -6,83 +6,24 @@
  *
  * @author André Narcizo - andre.narcizo@sysout.com.br
  */
-import type { AccountId, AccountSnapshot } from '@pokeidle-hub/shared';
+import type {
+  AccountId,
+  HuntMetric,
+  HuntRow,
+  HuntsResponse,
+  RaresPerHour,
+} from '@pokeidle-hub/shared';
 import { shinyHoursPerEvent } from '@pokeidle-hub/shared';
 import type { PrismaClient } from '../generated/prisma/client.js';
 import type { AccountViewReader } from '../sync/sync.coordinator.js';
 import { CATALOG_GAPS, buildCatalog } from './hunt-catalog.js';
-import type { CatalogGap, CatalogHunt } from './hunt-catalog.js';
 
 /** Trecho mínimo para contar como medição (evita números de poucos segundos). */
 export const MIN_MEASURE_MS = 10 * 60_000;
 /** Janela de medições consideradas. */
 export const MEASURE_WINDOW_DAYS = 30;
 
-/**
- * Métrica de ordenação (abas da tela).
- *
- * @author André Narcizo - andre.narcizo@sysout.com.br
- */
-export type HuntMetric = 'xp' | 'gold' | 'shiny' | 'rares';
-
-/**
- * Medição agregada de uma hunt.
- *
- * @author André Narcizo - andre.narcizo@sysout.com.br
- */
-export interface Measurement {
-  hours: number;
-  samples: number;
-  lastAt: string;
-  species: string | null;
-}
-
-/**
- * Raros por hora numa Outland.
- *
- * @author André Narcizo - andre.narcizo@sysout.com.br
- */
-export interface RaresPerHour {
-  bronzeBossToken: number | null;
-  keyFragment: number | null;
-  shinyStoneFragment: number | null;
-  bicycleFragment: number | null;
-}
-
-/**
- * Linha da tabela de hunts.
- *
- * @author André Narcizo - andre.narcizo@sysout.com.br
- */
-export interface HuntRow extends CatalogHunt {
-  measured: Measurement | null;
-  xpPerHour: number | null;
-  goldPerHour: number | null;
-  killsPerHour: number | null;
-  /** Sem fonte de cálculo (S0.3). */
-  killTimeSeconds: null;
-  /** Sem fonte de cálculo (S0.3). */
-  riskPct: null;
-  /** "1 a cada X h"; `null` na Outland (o shiny não rola lá) ou sem medição. */
-  shinyHours: number | null;
-  /** Só Outlands. */
-  rares: RaresPerHour | null;
-}
-
-/**
- * Resposta de `GET /hunts`.
- *
- * @author André Narcizo - andre.narcizo@sysout.com.br
- */
-export interface HuntsResponse {
-  accountId: AccountId;
-  state: 'ok' | 'no_sheet' | 'conflict';
-  trainerLevel: number | null;
-  activePokemon: AccountSnapshot['activePokemon'];
-  metric: HuntMetric;
-  hunts: HuntRow[];
-  gaps: readonly CatalogGap[];
-}
+export type { HuntMetric, HuntRow, HuntsResponse, RaresPerHour };
 
 interface ObservationRow {
   region: string;

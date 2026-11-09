@@ -1,5 +1,6 @@
 import { signal } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
+import { provideRouter } from '@angular/router';
 import { HubStore, emptySyncState } from '../../../core/hub-store';
 import { PanelPush } from '../../../core/push.service';
 import { GlobalBar } from './global-bar';
@@ -25,6 +26,7 @@ describe('GlobalBar', () => {
     TestBed.configureTestingModule({
       imports: [GlobalBar],
       providers: [
+        provideRouter([]),
         { provide: HubStore, useValue: store },
         { provide: PanelPush, useValue: { state: signal('unsupported') } },
       ],

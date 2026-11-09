@@ -16,3 +16,4 @@ export * from './domain/alerts.js';
 export * from './protocol/alert-view.js';
 export * from './domain/alert-text.js';
 export * from './domain/hunt-math.js';
+export * from './protocol/hunts.js';

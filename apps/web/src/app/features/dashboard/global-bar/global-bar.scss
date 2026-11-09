@@ -215,3 +215,15 @@
     border-top: 1px solid var(--border);
   }
 }
+
+.hunts-link {
+  color: var(--text);
+  text-decoration: none;
+}
+
+:host(.compact) .hunts-link {
+  grid-row: 2;
+  grid-column: 1;
+  justify-self: start;
+  min-height: 36px;
+}

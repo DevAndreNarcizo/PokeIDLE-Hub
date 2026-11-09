@@ -9,7 +9,10 @@
  * @author André Narcizo - andre.narcizo@sysout.com.br
  */
 import { GAME_RULES_SOURCE_DATE, KNOWN_HUNT_LEVELS, OUTLANDS, REGIONS } from '@pokeidle-hub/shared';
+import type { CatalogGap, CatalogHunt } from '@pokeidle-hub/shared';
 import type { PrismaClient } from '../generated/prisma/client.js';
+
+export type { CatalogGap, CatalogHunt };
 
 /**
  * Origem dos registros gerados a partir do GAME_RULES.md.
@@ -17,32 +20,6 @@ import type { PrismaClient } from '../generated/prisma/client.js';
  * @author André Narcizo - andre.narcizo@sysout.com.br
  */
 export const CATALOG_SOURCE = `GAME_RULES.md (wiki ${GAME_RULES_SOURCE_DATE})`;
-
-/**
- * Hunt do catálogo.
- *
- * @author André Narcizo - andre.narcizo@sysout.com.br
- */
-export interface CatalogHunt {
-  region: string;
-  /** Nível do treinador exigido. */
-  level: number;
-  /** Nome exibido; só as Outlands têm nome conhecido ("Outland N"). */
-  name: string | null;
-  /** Índice da Outland (1–8), quando for uma. */
-  outland: number | null;
-  source: string;
-}
-
-/**
- * Lacuna conhecida do catálogo.
- *
- * @author André Narcizo - andre.narcizo@sysout.com.br
- */
-export interface CatalogGap {
-  region: string;
-  reason: string;
-}
 
 /**
  * Hunts com fonte registrada.

@@ -1,10 +1,11 @@
 /**
- * Seed idempotente das 4 contas (ARCHITECTURE.md §6). Rótulos genéricos "Conta N"; apelidos
+ * Seed idempotente das 4 contas (ARCHITECTURE.md §6) e do catálogo de hunts (F5-T1). Rótulos genéricos "Conta N"; apelidos
  * ficam nulos até o dono informar (OPEN_QUESTIONS.md #8).
  *
  * @author André Narcizo - andre.narcizo@sysout.com.br
  */
 import { createPrismaClient } from '../src/db/client.js';
+import { seedCatalog } from '../src/hunts/hunt-catalog.js';
 
 const ACCOUNT_IDS = [1, 2, 3, 4] as const;
 
@@ -23,6 +24,7 @@ async function main(): Promise<void> {
       });
     }
     process.stdout.write(`seed: ${ACCOUNT_IDS.length} contas garantidas\n`);
+    process.stdout.write(`seed: ${await seedCatalog(prisma)} hunts no catálogo (GAME_RULES.md)\n`);
   } finally {
     await prisma.$disconnect();
   }

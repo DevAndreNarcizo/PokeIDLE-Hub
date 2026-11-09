@@ -17,7 +17,8 @@ Mantenha esta lista atualizada. Cada item tem dono e impacto. Não inventar resp
 | 9 | Horário-limite para o lembrete de pendências diárias (padrão 18:00)? | Dono | Alerta `daily_pending` | F4-T2 | Aberta |
 | 10 | Sem iframe, o que ocupa a área do "viewport do jogo" no painel (620×349)? | Dono | Layout do painel (`DESIGN.md` §3/§4), F3-T3/T5 | Antes da F3 | **Decidida (dono, 09/11):** cartão "Sessão do jogo" no lugar do viewport |
 | 11 | Ponte: extensão própria (só leitura do DOM), extensão oficial ou manual? | Dono | Define F2-T5 e a pasta `extension/` | Antes da F2 | **Decidida (dono, 09/11):** extensão própria MV3, só leitura, para Brave |
-| 12 | Quais campos do `AccountSnapshot` aparecem na tela logada? | Dono | Matriz da S0.2; o que a extensão consegue ler | F0-T2b | Aberta (checklist em `spikes/S0.2.md`) |
+| 12 | Quais campos do `AccountSnapshot` aparecem na tela logada? | Dono | Matriz da S0.2; o que a extensão consegue ler | F0-T2b | Aberta (checklist em `spikes/S0.2.md`). Hoje a extensão só lê `conflict` (texto do §1) e `offline` (sem aba); o resto vai `null` |
 | 13 | Como o hub abre/foca cada conta, já que as sessões exigem 4 perfis de navegador separados? | Dono | Botões "Abrir conta" e "Jogar aqui" | F3-T5 | Aberta. Proposta: comando "focar aba" pela extensão do perfil da conta |
 | 14 | XP por abate, ouro por abate (fórmula), respawn e caminhada por hunt | Dono (equipe do jogo) | Habilita XP/h, ouro/h, abates/h | F5 | Aberta |
 | 15 | Limite de contas dos Termos (4 por pessoa, 4 conectadas por rede, mais de 4 no mesmo aparelho = multiconta) | Dono | Risco de banimento permanente | Contínuo | **Fato registrado.** O projeto usa exatamente o limite; o hub nunca cria nem abre uma 5ª conta |
+| 16 | Em que idioma a interface do jogo fica em cada perfil? | Dono | O leitor só conhece o texto em português ("Conta aberta em outro lugar") | F2-T5 | Aberta |

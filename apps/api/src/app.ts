@@ -18,6 +18,8 @@ import type { Env } from './config/env.js';
 import { createCors } from './http/cors.js';
 import { createErrorHandler, notFoundHandler } from './http/errors.js';
 import { createHealthRouter } from './http/health.js';
+import { createHistoryRouter } from './history/history.router.js';
+import type { HistoryRouterDeps } from './history/history.router.js';
 import { createIngestRouter } from './ingest/ingest.router.js';
 import type { IngestRouterDeps } from './ingest/ingest.router.js';
 import type { HealthCheck } from './http/health.js';
@@ -46,6 +48,8 @@ export interface AppDeps {
   accounts?: Omit<AccountsRouterDeps, 'requireAuth'>;
   /** Controle da sincronização (exige `auth`). */
   sync?: SyncControl;
+  /** Histórico (exige `auth`). */
+  history?: Omit<HistoryRouterDeps, 'requireAuth'>;
 }
 
 /**
@@ -81,6 +85,9 @@ export function createApp(deps: AppDeps): Express {
     }
     if (deps.sync) {
       app.use(createSyncRouter(deps.sync, authenticated));
+    }
+    if (deps.history) {
+      app.use(createHistoryRouter({ ...deps.history, requireAuth: authenticated }));
     }
   }
 

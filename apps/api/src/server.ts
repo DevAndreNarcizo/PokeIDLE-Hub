@@ -15,7 +15,9 @@ import { EnvValidationError, loadEnv } from './config/env.js';
 import type { Env } from './config/env.js';
 import { createPrismaClient, pingDatabase } from './db/client.js';
 import { HubEvents } from './events/hub-events.js';
+import { HistoryRepository } from './history/history.repository.js';
 import { SnapshotService } from './ingest/snapshot.service.js';
+import { RetentionJob } from './jobs/retention.job.js';
 import { createLogger } from './logger.js';
 import { RespondingSink } from './sync/responding-sink.js';
 import { StaleMarks } from './sync/stale-marks.js';
@@ -49,6 +51,12 @@ function main(): void {
   const accounts = new AccountRepository(prisma, staleMarks);
   const tokens = new AccessTokenService(env.HUB_JWT_SECRET, env.ACCESS_TOKEN_TTL_SECONDS);
   const bridgeTokens = new BridgeTokenService(prisma);
+  const history = new HistoryRepository(prisma);
+  const retention = new RetentionJob({
+    history,
+    retentionDays: env.SNAPSHOT_RETENTION_DAYS,
+    logger,
+  });
 
   // Provedores de status (ARCHITECTURE.md §1): a ponte da extensão é a fonte aprovada no S0.2.
   // A entrada manual não é pedida pela sincronização; chega por POST /accounts/:id/snapshot.
@@ -90,6 +98,7 @@ function main(): void {
     ingest: { bridgeTokens, sink, ratePerMinute: env.INGEST_RATE_PER_MINUTE },
     accounts: { accounts, manualSink: sink },
     sync: coordinator,
+    history: { history },
   });
 
   const panel = new PanelGateway({
@@ -103,11 +112,13 @@ function main(): void {
   const server = app.listen(env.PORT, () => {
     logger.info({ port: env.PORT, env: env.NODE_ENV }, 'API no ar');
   });
+  retention.start();
   attachWebSockets(server, { '/ws': panel, '/bridge': bridge }, logger);
 
   const shutdown = (signal: string): void => {
     logger.info({ signal }, 'encerrando');
     coordinator.dispose();
+    retention.stop();
     panel.close();
     bridge.close();
     server.close(() => {

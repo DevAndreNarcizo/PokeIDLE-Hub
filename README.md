@@ -2,7 +2,7 @@
 
 Painel pessoal para acompanhar e gerenciar 4 contas do [PokeIdle](https://pokeidle.io/app) num só lugar.
 
-> Status: Fase 0 (spikes) concluída e Fase 1 (fundação) entregue. Próxima: Fase 2 (pipeline de status). Siga `docs/ROADMAP.md`. O projeto é de uso individual (sem ranking, sem multiusuário).
+> Status: Fases 0, 1 e 2 entregues (a leitura detalhada da tela do jogo pela extensão aguarda o mapeamento da tela logada, `docs/OPEN_QUESTIONS.md` #12). Próxima: Fase 3 (interface). Siga `docs/ROADMAP.md`. O projeto é de uso individual (sem ranking, sem multiusuário).
 
 ## O que faz
 
@@ -66,6 +66,8 @@ npm run dev                                  # API em :3000 e painel em :4200
 | `npm run lint` / `npm run typecheck` / `npm run format:check` | Qualidade |
 | `npm run db:migrate` | Migrações (desenvolvimento) e seed |
 | `npm run db:deploy -w @pokeidle-hub/api` | Migrações em produção e seed |
+| `npm run bridge-token -w @pokeidle-hub/api -- issue <1-4>` | Gera o token da ponte de uma conta (mostrado uma vez); `revoke <1-4>` revoga |
+| `npm run build -w @pokeidle-hub/extension` | Gera a extensão para o Brave em `extension/dist` (instalação em `extension/README.md`) |
 
 Nunca versione o `.env`. O hub não guarda a senha do jogo.
 

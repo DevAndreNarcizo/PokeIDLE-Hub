@@ -74,7 +74,7 @@ export interface AccountSnapshot {
     power: 1 | 2 | 3 | 4 | 5; quality: number;
     ivs: { hp: number; atk: number; def: number; spAtk: number; spDef: number; spd: number };
     stats: { hp: number; atk: number; def: number; spAtk: number; spDef: number; spd: number };
-    shiny: boolean;
+    shiny: boolean | null;               // null: fonte não informa
   } | null;
   session: {
     xpTrainerPerHour: number | null; xpPokemonPerHour: number | null;
@@ -87,6 +87,7 @@ export interface AccountSnapshot {
   automations: { revive: AutoState; potions: AutoState; returnToHunt: AutoState; throwNonstop: AutoState } | null;
   daily: { battlePassDay: number | null; battlePassClaimedToday: boolean | null; topIdleVotedToday: boolean | null } | null;
   seasonalTypeOfDay: string | null;
+  reader?: 'hunt_extension' | 'dom' | null; // fonte da leitura na extensão (09/11/2026)
 }
 export type AutoState = 'on' | 'off' | 'paused';
 ```

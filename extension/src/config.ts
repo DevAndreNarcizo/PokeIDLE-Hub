@@ -10,7 +10,11 @@ import type { BridgeConfig } from './bridge-client.js';
  *
  * @author André Narcizo - andre.narcizo@sysout.com.br
  */
-export const STORAGE_KEYS = { config: 'bridgeConfig', status: 'bridgeStatus' } as const;
+export const STORAGE_KEYS = {
+  config: 'bridgeConfig',
+  status: 'bridgeStatus',
+  reader: 'bridgeReader',
+} as const;
 
 /**
  * Valida um valor lido do armazenamento.

@@ -6,7 +6,12 @@
  * @author André Narcizo - andre.narcizo@sysout.com.br
  */
 import type { AccountId, AccountSnapshot, AccountStatus } from '@pokeidle-hub/shared';
+import type { HuntState } from '../hunt/hunt-state.js';
+import { snapshotFieldsFromHunt } from '../hunt/hunt-state.js';
 import { SCREEN_TEXT } from './selectors.js';
+
+/** Estado da /hunt mais velho que isso é ignorado (a extensão pode ter parado). */
+export const HUNT_STATE_MAX_AGE_MS = 2 * 60_000;
 
 /**
  * Detecta o status da conta pelo que está visível.
@@ -30,14 +35,30 @@ export function detectStatus(doc: Document): AccountStatus {
  * @param doc Documento da aba do jogo.
  * @param accountId Conta deste perfil (vem do `hello.ok` da ponte).
  * @param now Instante da captura.
+ * @param hunt Último estado repassado pela /hunt for PokeIdle (opcional). Com estado recente, os
+ *   campos conhecidos vêm dele (`reader = 'hunt_extension'`); sem ele, só a tela (`reader = 'dom'`).
  * @returns Snapshot válido pelo contrato compartilhado.
  * @author André Narcizo - andre.narcizo@sysout.com.br
  */
-export function readSnapshot(doc: Document, accountId: AccountId, now: Date): AccountSnapshot {
-  return {
+export function readSnapshot(
+  doc: Document,
+  accountId: AccountId,
+  now: Date,
+  hunt: { state: HuntState; receivedAt: number } | null = null,
+): AccountSnapshot {
+  const base: AccountSnapshot = {
     ...emptySnapshot(accountId, now),
     status: detectStatus(doc),
+    reader: 'dom',
   };
+  if (
+    !hunt ||
+    now.getTime() - hunt.receivedAt > HUNT_STATE_MAX_AGE_MS ||
+    base.status === 'conflict'
+  ) {
+    return base;
+  }
+  return { ...base, ...snapshotFieldsFromHunt(hunt.state, now), reader: 'hunt_extension' };
 }
 
 /**
@@ -49,7 +70,7 @@ export function readSnapshot(doc: Document, accountId: AccountId, now: Date): Ac
  * @author André Narcizo - andre.narcizo@sysout.com.br
  */
 export function offlineSnapshot(accountId: AccountId, now: Date): AccountSnapshot {
-  return { ...emptySnapshot(accountId, now), status: 'offline' };
+  return { ...emptySnapshot(accountId, now), status: 'offline', reader: null };
 }
 
 function emptySnapshot(accountId: AccountId, now: Date): AccountSnapshot {

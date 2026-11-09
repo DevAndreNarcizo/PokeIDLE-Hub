@@ -63,6 +63,8 @@ const client = new BridgeClient({
   focusGameTab,
   setStatus: (status: BridgeStatus) =>
     void chrome.storage.local.set({ [STORAGE_KEYS.status]: status }),
+  noteReader: (reader) =>
+    void chrome.storage.local.set({ [STORAGE_KEYS.reader]: reader ?? 'none' }),
   setTimeout: (fn, ms) => setTimeout(fn, ms),
   clearTimeout: (handle) => clearTimeout(handle as ReturnType<typeof setTimeout>),
   setInterval: (fn, ms) => setInterval(fn, ms),

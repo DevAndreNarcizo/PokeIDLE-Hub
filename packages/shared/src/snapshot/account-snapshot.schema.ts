@@ -90,7 +90,8 @@ export const accountSnapshotSchema = z.strictObject({
       quality: nonNegativeNumber,
       ivs: sixStatsSchema,
       stats: sixStatsSchema,
-      shiny: z.boolean(),
+      /** `null` quando a fonte não informa (a tela e a /hunt não expõem com certeza). */
+      shiny: z.boolean().nullable(),
     })
     .nullable(),
   session: z
@@ -138,6 +139,11 @@ export const accountSnapshotSchema = z.strictObject({
     })
     .nullable(),
   seasonalTypeOfDay: z.string().min(1).max(32).nullable(),
+  /**
+   * De onde a extensão leu os dados (acrescentado em 09/11/2026): `hunt_extension` = estado do jogo
+   * entregue pela extensão "/hunt for PokeIdle"; `dom` = leitura da tela (reserva, mais limitada).
+   */
+  reader: z.enum(['hunt_extension', 'dom']).nullable().optional(),
 });
 
 /** Número da conta (1 a 4). */

@@ -59,6 +59,17 @@ export class AccountPanel {
     return level ? `Treinador nv ${formatInt(level)}` : 'Nível desconhecido';
   });
   protected readonly lastData = computed(() => formatShortClock(this.account().receivedAt));
+  /** De onde a extensão leu os dados (completo pela /hunt ou limitado pela tela). */
+  protected readonly reader = computed(() => {
+    switch (this.account().snapshot?.reader) {
+      case 'hunt_extension':
+        return { text: 'Fonte: /hunt', limited: false };
+      case 'dom':
+        return { text: 'Fonte: tela (limitada)', limited: true };
+      default:
+        return null;
+    }
+  });
   protected readonly boosts = computed(() =>
     (this.live()?.boosts ?? []).map((b) => ({
       kind: b.kind,

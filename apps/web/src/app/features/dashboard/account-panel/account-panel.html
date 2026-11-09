@@ -40,6 +40,19 @@
             <span class="tag">{{ huntText }}</span>
           }
           <span class="tag muted">Último dado {{ lastData() }}</span>
+          @if (reader(); as r) {
+            <span
+              class="tag"
+              [class.muted]="!r.limited"
+              [class.limited]="r.limited"
+              [attr.title]="
+                r.limited
+                  ? 'Instale a extensão /hunt for PokeIdle neste perfil do Brave para ler todos os dados'
+                  : null
+              "
+              >{{ r.text }}</span
+            >
+          }
         </div>
       </section>
       <div class="team" aria-label="Equipe">

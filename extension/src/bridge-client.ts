@@ -70,6 +70,8 @@ export interface BridgePlatform {
   /** Traz a aba do jogo para a frente ou abre uma nova (nunca clica no jogo). */
   focusGameTab(): Promise<void>;
   setStatus(status: BridgeStatus): void;
+  /** Registra de onde veio a última leitura (para a página de opções). */
+  noteReader?(reader: AccountSnapshot['reader']): void;
   setTimeout(fn: () => void, ms: number): unknown;
   clearTimeout(handle: unknown): void;
   setInterval(fn: () => void, ms: number): unknown;
@@ -184,6 +186,7 @@ export class BridgeClient {
       case 'sync.request': {
         if (this.accountId !== null) {
           const snapshot = await this.collect(this.accountId);
+          this.platform.noteReader?.(snapshot.reader ?? null);
           this.send({
             v: PROTOCOL_VERSION,
             type: 'snapshot',

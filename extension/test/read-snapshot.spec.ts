@@ -33,6 +33,7 @@ describe('leitor de tela (fixtures ILUSTRATIVAS)', () => {
       automations: null,
       daily: null,
       seasonalTypeOfDay: null,
+      reader: 'dom',
     });
   });
 

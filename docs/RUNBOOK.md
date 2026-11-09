@@ -144,6 +144,7 @@ Copie os backups para fora do servidor; hoje eles ficam só no mesmo disco.
 | Painel sem tempo real (aviso "Sem conexão com o hub") | WebSocket bloqueado | Confira o bloco `/ws` do nginx (Upgrade e `Host $http_host`) e `CORS_ORIGIN` igual à origem do painel |
 | "Notificações não configuradas no servidor" | Falta VAPID no `.env` | §3 (vapid-keys) e reinicie |
 | Push não chega no celular | Aparelho sem permissão, inscrição expirada ou PWA não instalado (iOS exige "Adicionar à Tela de Início") | Ative de novo em "Ativar alertas neste aparelho" e use "Testar" |
+| Cartão mostra "Fonte: tela (limitada)" | A /hunt for PokeIdle não está no perfil, foi atualizada e mudou o formato, ou a aba do jogo foi aberta antes de instalá-la | Instale a /hunt no perfil e recarregue a aba do jogo; se persistir, a /hunt mudou: abra uma issue |
 | Hunts "sem medição ainda" | A conta ainda não caçou nessa hunt com o pokemon ativo por 10 min ou mais | Normal: o hub só mostra valores medidos (S0.3) |
 
 ## 10. Desenvolvimento e testes

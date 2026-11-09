@@ -33,6 +33,12 @@ await Promise.all([
   }),
   build({
     ...common,
+    entryPoints: ['src/page-bridge.ts'],
+    outfile: `${outdir}/page-bridge.js`,
+    format: 'iife',
+  }),
+  build({
+    ...common,
     entryPoints: ['src/options.ts'],
     outfile: `${outdir}/options.js`,
     format: 'iife',

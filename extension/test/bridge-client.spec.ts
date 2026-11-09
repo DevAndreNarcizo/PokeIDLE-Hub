@@ -45,6 +45,10 @@ class FakePlatform implements BridgePlatform {
   readGameTab(): Promise<unknown> {
     return Promise.resolve(this.tab);
   }
+  readers: unknown[] = [];
+  noteReader(reader: unknown): void {
+    this.readers.push(reader);
+  }
   focused = 0;
   focusGameTab(): Promise<void> {
     this.focused += 1;
@@ -224,3 +228,12 @@ function offline(accountId: AccountId) {
     seasonalTypeOfDay: null,
   };
 }
+
+describe('fonte da leitura', () => {
+  it('a página de opções explica cada fonte', async () => {
+    const { describeReader } = await import('../src/options-text.js');
+    expect(describeReader('hunt_extension')).toContain('/hunt for PokeIdle');
+    expect(describeReader('dom')).toContain('limitada');
+    expect(describeReader(undefined)).toContain('ainda sem leitura');
+  });
+});

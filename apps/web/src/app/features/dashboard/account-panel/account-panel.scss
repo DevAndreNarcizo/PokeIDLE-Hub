@@ -126,6 +126,10 @@
   &.muted {
     color: var(--muted);
   }
+
+  &.limited {
+    color: var(--warn);
+  }
 }
 
 .team {

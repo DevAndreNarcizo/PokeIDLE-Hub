@@ -3,7 +3,7 @@
   "name": "PokeIdle Hub — Ponte",
   "short_name": "PokeIdle Hub",
   "version": "0.1.0",
-  "description": "Lê o estado visível da sua aba do PokeIdle e envia ao seu PokeIdle Hub. Somente leitura: não clica nem digita no jogo.",
+  "description": "Lê o estado da sua aba do PokeIdle (direto ou pela extensão /hunt for PokeIdle, se instalada) e envia ao seu PokeIdle Hub. Somente leitura: não clica nem digita no jogo.",
   "minimum_chrome_version": "116",
   "permissions": ["storage", "alarms"],
   "host_permissions": ["https://pokeidle.io/*"],
@@ -16,6 +16,12 @@
       "matches": ["https://pokeidle.io/app*"],
       "js": ["content.js"],
       "run_at": "document_idle"
+    },
+    {
+      "matches": ["https://pokeidle.io/app*"],
+      "js": ["page-bridge.js"],
+      "run_at": "document_idle",
+      "world": "MAIN"
     }
   ],
   "options_ui": {

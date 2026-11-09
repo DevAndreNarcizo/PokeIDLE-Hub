@@ -27,3 +27,34 @@
 .loading {
   color: var(--muted);
 }
+
+.notice {
+  margin: 0;
+  padding: 10px 14px;
+  border: 1px solid var(--info);
+  border-radius: var(--radius-card);
+  background: color-mix(in srgb, var(--info) 10%, var(--surface));
+}
+
+/* Celular (DESIGN.md §4): cabeçalho e abas fixos no topo; conteúdo rola. */
+.mobile {
+  min-height: 100dvh;
+}
+
+.sticky {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  background: var(--bg);
+  border-bottom: 1px solid var(--border);
+}
+
+.mobile-body {
+  display: grid;
+  gap: 10px;
+  padding: 0 16px;
+
+  &:has(> *) {
+    padding-top: 12px;
+  }
+}

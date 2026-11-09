@@ -1,11 +1,43 @@
-<div class="root" [class.grid-2x2]="viewport.grid()">
-  <hub-global-bar />
-  <hub-connection-banner />
-  <main class="accounts" aria-label="Contas">
-    @for (account of store.accounts(); track account.accountId) {
-      <hub-account-panel [account]="account" [now]="now()" (focusAccount)="onFocus($event)" />
-    } @empty {
-      <p class="loading">Carregando contas…</p>
+@if (viewport.mobile()) {
+  <div class="mobile">
+    <div class="sticky">
+      <hub-global-bar [compact]="true" />
+      <hub-account-tabs [accounts]="store.accounts()" [(selected)]="selected" />
+    </div>
+    <div class="mobile-body">
+      <hub-connection-banner />
+      @if (store.notice(); as notice) {
+        <p class="notice" role="status">{{ notice }}</p>
+      }
+    </div>
+    @if (selectedAccount(); as account) {
+      <section
+        role="tabpanel"
+        [id]="'tabpanel-' + account.accountId"
+        [attr.aria-labelledby]="'tab-' + account.accountId"
+      >
+        <hub-account-panel
+          [account]="account"
+          [compact]="true"
+          [now]="now()"
+          (focusAccount)="onFocus($event)"
+        />
+      </section>
     }
-  </main>
-</div>
+  </div>
+} @else {
+  <div class="root" [class.grid-2x2]="viewport.grid()">
+    <hub-global-bar />
+    <hub-connection-banner />
+    @if (store.notice(); as notice) {
+      <p class="notice" role="status">{{ notice }}</p>
+    }
+    <main class="accounts" aria-label="Contas">
+      @for (account of store.accounts(); track account.accountId) {
+        <hub-account-panel [account]="account" [now]="now()" (focusAccount)="onFocus($event)" />
+      } @empty {
+        <p class="loading">Carregando contas…</p>
+      }
+    </main>
+  </div>
+}

@@ -256,3 +256,9 @@ h3.label {
   min-height: 28px;
   padding: 3px 9px;
 }
+
+:host(.compact) .session-meta {
+  position: static;
+  justify-content: center;
+  margin-top: 6px;
+}

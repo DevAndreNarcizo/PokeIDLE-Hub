@@ -13,15 +13,16 @@
     "typecheck": "tsc -p tsconfig.json --noEmit",
     "test": "vitest run --passWithNoTests",
     "db:generate": "prisma generate",
-    "db:migrate": "prisma migrate dev && prisma db seed",
-    "db:deploy": "prisma migrate deploy && prisma db seed",
-    "db:seed": "prisma db seed",
+    "db:migrate": "prisma migrate dev && prisma generate && prisma db seed",
+    "db:deploy": "prisma migrate deploy && prisma generate && prisma db seed",
+    "db:seed": "prisma generate && prisma db seed",
     "prebuild": "prisma generate",
     "pretypecheck": "prisma generate",
     "pretest": "prisma generate",
     "hash-password": "tsx src/cli/hash-password.ts",
     "bridge-token": "tsx --env-file-if-exists=../../.env src/cli/bridge-token.ts",
-    "vapid-keys": "tsx src/cli/vapid-keys.ts"
+    "vapid-keys": "tsx src/cli/vapid-keys.ts",
+    "postinstall": "prisma generate"
   },
   "dependencies": {
     "@node-rs/argon2": "^2.2.2",

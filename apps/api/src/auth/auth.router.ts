@@ -28,6 +28,11 @@ export interface AuthRouterDeps {
   refreshStore: RefreshTokenStore;
   verifyPassword: PasswordVerifier;
   refreshTtlDays: number;
+  /**
+   * Prefixo público sob o qual o navegador acessa a API (ex.: `/api` atrás do nginx ou do proxy do
+   * `ng serve`). Usado no caminho do cookie de refresh. Padrão: vazio.
+   */
+  publicPrefix?: string;
   loginRateLimit: { max: number; windowSeconds: number };
   logger: Logger;
   now?: () => Date;
@@ -44,6 +49,7 @@ export function createAuthRouter(deps: AuthRouterDeps): Router {
   const now = deps.now ?? (() => new Date());
   const router = Router();
 
+  const refreshPath = `${deps.publicPrefix ?? ''}/auth`;
   const baseCookie: CookieOptions = { httpOnly: true, secure: true, sameSite: 'strict' };
 
   /** Emite um novo par de tokens e grava os cookies. */
@@ -62,7 +68,7 @@ export function createAuthRouter(deps: AuthRouterDeps): Router {
     });
     res.cookie(REFRESH_COOKIE, refresh, {
       ...baseCookie,
-      path: '/auth',
+      path: refreshPath,
       expires: refreshExpiresAt,
     });
     return access.expiresAt;
@@ -70,7 +76,7 @@ export function createAuthRouter(deps: AuthRouterDeps): Router {
 
   const clearSession = (res: Response): void => {
     res.clearCookie(ACCESS_COOKIE, { ...baseCookie, path: '/' });
-    res.clearCookie(REFRESH_COOKIE, { ...baseCookie, path: '/auth' });
+    res.clearCookie(REFRESH_COOKIE, { ...baseCookie, path: refreshPath });
   };
 
   const loginLimiter = rateLimit({

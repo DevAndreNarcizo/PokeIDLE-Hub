@@ -1,8 +1,180 @@
-/* Estilos globais. Os tokens de DESIGN.md §1 entram na F3-T1. */
+/*
+ * Estilos globais e tokens do design (docs/DESIGN.md §1).
+ * @author André Narcizo - andre.narcizo@sysout.com.br
+ */
+
+:root {
+  --bg: #0b0e13;
+  --surface: #131821;
+  --surface-2: #1a212c;
+  --border: #263042;
+  --border-2: #354258;
+  --text: #e8ecf2;
+  --text-2: #c3ccd9;
+  --muted: #9aa6b8;
+  --accent: #f2b53c;
+  --accent-ink: #1a1300;
+  --ok: #3dd6b0;
+  --info: #8ab4ff;
+  --warn: #ff9f5a;
+  --off: #6b7789;
+
+  --font-display: 'Space Grotesk', system-ui, sans-serif;
+  --font-body: Inter, system-ui, sans-serif;
+
+  --radius-panel: 14px;
+  --radius-card: 10px;
+  --radius-chip: 8px;
+  --radius-pill: 999px;
+  --touch: 44px;
+
+  color-scheme: dark;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
 html,
 body {
   margin: 0;
-  background: #0b0e13;
-  color: #e8ecf2;
-  font-family: Inter, system-ui, sans-serif;
+  min-height: 100%;
+  background: var(--bg);
+  color: var(--text);
+  font: 400 14px/1.45 var(--font-body);
+  -webkit-font-smoothing: antialiased;
+}
+
+h1,
+h2,
+h3 {
+  margin: 0;
+  font-family: var(--font-display);
+  font-weight: 700;
+}
+
+button,
+input,
+select {
+  font: inherit;
+  color: inherit;
+}
+
+:focus-visible {
+  outline: 2px solid var(--info);
+  outline-offset: 2px;
+}
+
+.num {
+  font-family: var(--font-display);
+  font-variant-numeric: tabular-nums;
+}
+
+.label {
+  color: var(--muted);
+  font-size: 12px;
+}
+
+.visually-hidden {
+  position: absolute !important;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-height: var(--touch);
+  padding: 0 18px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-card);
+  background: var(--surface-2);
+  font-weight: 600;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.btn:disabled {
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+.btn--primary {
+  border-color: transparent;
+  background: var(--accent);
+  color: var(--accent-ink);
+}
+
+.chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 30px;
+  padding: 4px 10px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-chip);
+  background: var(--surface-2);
+  font-size: 13px;
+}
+
+.chip small {
+  color: var(--muted);
+  font-size: 12px;
+}
+
+.pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 28px;
+  padding: 2px 12px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-pill);
+  background: var(--surface-2);
+  font-size: 13px;
+  white-space: nowrap;
+}
+
+.dot {
+  flex: none;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--off);
+}
+
+.tone-ok {
+  --tone: var(--ok);
+}
+.tone-info {
+  --tone: var(--info);
+}
+.tone-warn {
+  --tone: var(--warn);
+}
+.tone-off {
+  --tone: var(--off);
+}
+.tone-ok .dot,
+.tone-info .dot,
+.tone-warn .dot,
+.tone-off .dot {
+  background: var(--tone);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
 }

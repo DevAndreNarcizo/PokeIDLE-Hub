@@ -12,6 +12,11 @@ const envSchema = z.object({
   LOG_LEVEL: z.enum(['fatal', 'error', 'warn', 'info', 'debug', 'trace', 'silent']).default('info'),
   /** Origem única do painel liberada no CORS (ARCHITECTURE.md §9). */
   CORS_ORIGIN: z.url(),
+  /** Prefixo público da API no navegador (ex.: `/api`); define o caminho do cookie de refresh. */
+  API_PUBLIC_PREFIX: z
+    .string()
+    .regex(/^(\/[a-z0-9-]+)*$/, 'use vazio ou algo como /api')
+    .default(''),
   /** Conexão PostgreSQL usada pelo Prisma. */
   DATABASE_URL: z
     .url()

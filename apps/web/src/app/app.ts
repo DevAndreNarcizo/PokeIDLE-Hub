@@ -1,9 +1,9 @@
 /**
- * Componente raiz: hospeda o `router-outlet`. O layout real (barra global e grid) vem na Fase 3.
+ * Componente raiz: só hospeda o `router-outlet`.
  *
  * @author André Narcizo - andre.narcizo@sysout.com.br
  */
-import { Component } from '@angular/core';
+import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
 
 /**
@@ -14,9 +14,9 @@ import { RouterOutlet } from '@angular/router';
 @Component({
   imports: [RouterOutlet],
   selector: 'hub-root',
-  styleUrl: './app.scss',
-  templateUrl: './app.html',
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  template: '<router-outlet />',
 })
-export class App {
-  protected readonly title = 'PokeIdle Hub';
-}
+// Casca sem lógica: o roteamento faz todo o trabalho.
+// eslint-disable-next-line @typescript-eslint/no-extraneous-class
+export class App {}

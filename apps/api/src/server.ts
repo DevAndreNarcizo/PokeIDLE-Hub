@@ -90,6 +90,7 @@ function main(): void {
       refreshStore: new PrismaRefreshTokenStore(prisma),
       verifyPassword: createArgon2Verifier(env.HUB_ADMIN_PASSWORD_HASH),
       refreshTtlDays: env.REFRESH_TOKEN_TTL_DAYS,
+      publicPrefix: env.API_PUBLIC_PREFIX,
       loginRateLimit: {
         max: env.LOGIN_RATE_LIMIT_MAX,
         windowSeconds: env.LOGIN_RATE_LIMIT_WINDOW_SECONDS,

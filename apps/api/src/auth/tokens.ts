@@ -17,7 +17,7 @@ const OWNER_SUBJECT = 'owner';
  * @author André Narcizo - andre.narcizo@sysout.com.br
  */
 export type AccessTokenCheck =
-  { ok: true; subject: string } | { ok: false; reason: 'expired' | 'invalid' };
+  { ok: true; subject: string; expiresAt: Date } | { ok: false; reason: 'expired' | 'invalid' };
 
 /**
  * Serviço de JWT de acesso.
@@ -73,7 +73,9 @@ export class AccessTokenService {
         algorithms: ['HS256'],
         currentDate: this.now(),
       });
-      return payload.sub ? { ok: true, subject: payload.sub } : { ok: false, reason: 'invalid' };
+      return payload.sub && payload.exp
+        ? { ok: true, subject: payload.sub, expiresAt: new Date(payload.exp * 1000) }
+        : { ok: false, reason: 'invalid' };
     } catch (error) {
       return { ok: false, reason: error instanceof errors.JWTExpired ? 'expired' : 'invalid' };
     }

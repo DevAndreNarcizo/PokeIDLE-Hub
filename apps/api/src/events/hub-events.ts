@@ -5,7 +5,7 @@
  * @author André Narcizo - andre.narcizo@sysout.com.br
  */
 import { EventEmitter } from 'node:events';
-import type { AccountView } from '@pokeidle-hub/shared';
+import type { AccountView, SyncState } from '@pokeidle-hub/shared';
 
 /**
  * Mapa de eventos e seus argumentos.
@@ -14,6 +14,7 @@ import type { AccountView } from '@pokeidle-hub/shared';
  */
 export interface HubEventMap {
   'account.updated': [view: AccountView];
+  'sync.state': [state: SyncState];
 }
 
 /**

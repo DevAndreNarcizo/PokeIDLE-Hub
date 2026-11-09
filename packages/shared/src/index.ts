@@ -8,3 +8,5 @@ export * from './snapshot/account-snapshot.schema.js';
 export * from './game-rules/constants.js';
 export * from './domain/staleness.js';
 export * from './protocol/account-view.js';
+export * from './protocol/sync-state.js';
+export * from './protocol/panel-messages.js';

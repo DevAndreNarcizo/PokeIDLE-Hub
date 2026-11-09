@@ -63,3 +63,9 @@ jobs:
 
       - name: Build
         run: npm run build
+
+      - name: Navegador do Playwright
+        run: npx playwright install --with-deps chromium
+
+      - name: E2E (2560×1080 e 390×844)
+        run: npx playwright test --trace off

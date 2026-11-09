@@ -9,14 +9,14 @@ Mantenha esta lista atualizada. Cada item tem dono e impacto. Não inventar resp
 | 1 | O `pokeidle.io/app` permite ser embutido em iframe? | Claude Code | Define viewport embutido x janela dedicada | F0-T1 | **Respondida: não** (`X-Frame-Options: DENY`, `frame-ancestors 'none'`). Ver `spikes/S0.1.md` |
 | 2 | Existe API pública ou WebSocket de leitura do jogo? | Dono (Discord `#open-ticket`) | Define a fonte de status | F0-T2 | Sem API pública nos Termos/site; WS do cliente é privado. Confirmar no Discord (perguntas em `spikes/S0.2.md`) |
 | 3 | A extensão oficial de automação (`#how-to-play`) pode servir de ponte? | Dono | Evita escrever extensão própria | F0-T2 | Aberta: existe e é permitida (Termos §5); falta ver se expõe dados |
-| 4 | Como o site da comunidade calcula XP/h, ouro/h, abates/h, "mata em" e risco? | Claude Code + dono | Define a Fase 5 | F0-T3 | Site inacessível deste ambiente. Recomendado "indisponível" até haver insumos (`spikes/S0.3.md`) |
+| 4 | Como o site da comunidade calcula XP/h, ouro/h, abates/h, "mata em" e risco? | Claude Code + dono | Define a Fase 5 | F0-T3 | Dono quer dados diretos: hub usa métricas **medidas** pela extensão por hunt. Projeção de hunts não caçadas segue aberta (`spikes/S0.3.md`) |
 | 5 | Qual a lista completa de hunts e seus níveis (Kanto, Hoenn e demais)? | Dono (Mapa em modo Lista, CSV da Pokedex) | Catálogo de hunts | F5-T1 | Aberta |
 | 6 | Como obter a tipagem do dia sem modelar o jogo? | Claude Code | Alerta e cálculo com Dia Sazonal | Backlog | Aberta: candidata a leitura pela extensão, se aparecer na tela |
 | 7 | Os sprites do jogo podem ser usados no hub? | Dono | Visual da tela de hunts | F3-T4 | **Recomendação: não.** Termos §2: o jogo não tem direitos sobre nomes e imagens da franquia. Usar placeholder com inicial em definitivo |
 | 8 | Qual o apelido/nick de cada conta e o papel de cada uma? | Dono | Rótulos e configuração | F1-T4 | Aberta |
 | 9 | Horário-limite para o lembrete de pendências diárias (padrão 18:00)? | Dono | Alerta `daily_pending` | F4-T2 | Aberta |
-| 10 | Sem iframe, o que ocupa a área do "viewport do jogo" no painel (620×349)? | Dono | Layout do painel (`DESIGN.md` §3/§4), F3-T3/T5 | Antes da F3 | Aberta. Proposta: cartão "Sessão do jogo" com status, último dado e botão **Abrir conta / Focar janela**, e a coluna direita mais larga |
-| 11 | Ponte: extensão própria (só leitura do DOM), extensão oficial ou manual? | Dono | Define F2-T5 e a pasta `extension/` | Antes da F2 | Aberta. Recomendado: extensão própria MV3 + fallback manual |
+| 10 | Sem iframe, o que ocupa a área do "viewport do jogo" no painel (620×349)? | Dono | Layout do painel (`DESIGN.md` §3/§4), F3-T3/T5 | Antes da F3 | **Decidida (dono, 09/11):** cartão "Sessão do jogo" no lugar do viewport |
+| 11 | Ponte: extensão própria (só leitura do DOM), extensão oficial ou manual? | Dono | Define F2-T5 e a pasta `extension/` | Antes da F2 | **Decidida (dono, 09/11):** extensão própria MV3, só leitura, para Brave |
 | 12 | Quais campos do `AccountSnapshot` aparecem na tela logada? | Dono | Matriz da S0.2; o que a extensão consegue ler | F0-T2b | Aberta (checklist em `spikes/S0.2.md`) |
 | 13 | Como o hub abre/foca cada conta, já que as sessões exigem 4 perfis de navegador separados? | Dono | Botões "Abrir conta" e "Jogar aqui" | F3-T5 | Aberta. Proposta: comando "focar aba" pela extensão do perfil da conta |
 | 14 | XP por abate, ouro por abate (fórmula), respawn e caminhada por hunt | Dono (equipe do jogo) | Habilita XP/h, ouro/h, abates/h | F5 | Aberta |

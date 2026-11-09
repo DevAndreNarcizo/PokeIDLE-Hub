@@ -20,6 +20,8 @@
                       └────────────────┘             └────────────────┘
 ```
 
+Decisões da Fase 0 (09/11/2026, aprovadas pelo dono): **sem iframe** (o jogo envia `frame-ancestors 'none'`; S0.1); ponte = **extensão própria MV3, só leitura, para Brave**, uma instalação por perfil/conta (S0.2); métricas de hunt **medidas** pela extensão, nunca estimadas (S0.3).
+
 Princípio: **o jogo é a fonte de verdade e o hub é um observador**. A API não fala com o jogo; ela recebe snapshots por um `StatusProvider`. Isso isola a maior incerteza do projeto (de onde vêm os dados) atrás de uma interface.
 
 ## 2. Decisões e justificativas
@@ -165,6 +167,25 @@ CREATE TABLE hunt_catalog (             -- preenchido conforme spike S0.3
   source        text NOT NULL,
   UNIQUE (region, level, species)
 );
+
+CREATE TABLE hunt_observations (       -- medições reais por hunt (decisão S0.3)
+  id            bigserial PRIMARY KEY,
+  account_id    smallint NOT NULL REFERENCES accounts(id),
+  region        text NOT NULL,
+  hunt_level    integer NOT NULL,
+  hunt_name     text,
+  species       text,                    -- pokemon ativo durante a medição
+  pokemon_level integer,
+  started_at    timestamptz NOT NULL,
+  ended_at      timestamptz NOT NULL,
+  kills         integer,
+  xp_trainer    numeric,
+  xp_pokemon    numeric,
+  gold          numeric,
+  captures      integer,
+  source        text NOT NULL            -- 'extension' | 'manual'
+);
+CREATE INDEX hunt_observations_hunt ON hunt_observations (region, hunt_level, ended_at DESC);
 ```
 
 Retenção: job diário apaga `snapshots` com mais de N dias (padrão 30). Downsample opcional para 1 ponto por minuto após 24 h.

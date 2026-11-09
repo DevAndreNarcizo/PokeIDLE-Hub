@@ -2,6 +2,8 @@
 
 Referência visual: canvas de Design "PokeIdle Hub" (privado do dono). Este documento é a especificação textual; em caso de divergência, vale este arquivo. Capturas do canvas devem ser exportadas para `docs/design/` antes do desenvolvimento.
 
+> **Divergência com o canvas (decisão de 09/11/2026):** o canvas ainda mostra o "Viewport do jogo". O jogo proíbe iframe (S0.1); vale o cartão **Sessão do jogo** descrito abaixo.
+
 Telas no canvas: **Desktop ultrawide 2×2** (2560×1080), **Celular com abas** (390×844), **Hunts por conta** (página fluida), **Planejamento** (documento de apoio).
 
 ## 1. Tokens
@@ -45,14 +47,14 @@ Status **nunca só por cor**: ponto + texto (e ícone em alertas).
 
 - Raiz com 20 px de padding, coluna: **barra global** (76 px) + **grid** 2×2 (gap 16 px), ocupando o restante da altura.
 - **Barra global**: marca (quatro quadrados) e "PokeIdle Hub"; pílulas de resumo (caçando, no Centro, em outro lugar, diário X/Y); lista de eventos (rótulo + texto, o mais urgente em `--warn`); switch **Auto 30 s**, **Última sync** (hora) e botão **Sincronizar tudo** (ícone gira enquanto sincroniza).
-- **Painel da conta** (cabeçalho 36 px de número + nome + nível + chip de status): corpo em duas colunas — esquerda 620 px com **viewport do jogo** (16:9, 620×349) e barras de equipe; direita com banner (se houver), grade de 6 métricas (3 colunas), boosts, automações e diário.
+- **Painel da conta** (cabeçalho 36 px de número + nome + nível + chip de status): corpo em duas colunas — esquerda 620 px com o cartão **Sessão do jogo** (status, hunt atual, hora do último dado e botão **Abrir/Focar conta**; substitui o viewport, que o jogo bloqueia — ver `docs/spikes/S0.1.md`) e barras de equipe; direita com banner (se houver), grade de 6 métricas (3 colunas), boosts, automações e diário.
 - Em larguras menores que o desktop ultrawide, o grid vira 1 coluna de painéis empilhados; abaixo de ~820 px usar o layout de celular.
 
 ## 4. Celular (390 px)
 
 - Cabeçalho fixo: marca, hora da última sync, botão **Sincronizar** (44 px), resumo das contas, switch Auto.
 - **Abas** das 4 contas (grade de 4, 56 px de altura): ponto de status + "Conta N" + nível; aba ativa com borda `--accent`. `role="tablist"`, `aria-selected`.
-- Conteúdo rolável da conta em foco: título e chip, banner, viewport 16:9 (largura total), equipe, métricas em 2 colunas, boosts, automações, diário e **Próximos eventos** (comuns às contas).
+- Conteúdo rolável da conta em foco: título e chip, banner, cartão **Sessão do jogo** (largura total), equipe, métricas em 2 colunas, boosts, automações, diário e **Próximos eventos** (comuns às contas).
 
 ## 5. Hunts por conta
 

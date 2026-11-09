@@ -38,7 +38,7 @@ Cada conta mostra:
 - Boosts ativos com tempo restante; automações (Revive, Poções, Voltar à hunt, Lançar sem parar) com estado ligada/desligada/pausada.
 - Diário: Passe de Batalha (dia X/30, resgatado ou pendente) e voto no TopIdle.
 - Banner de alerta quando houver (conta em outro lugar com botão **Jogar aqui**; time caiu; automação pausada por falta de item).
-- Área do jogo: viewport embutido **se** o spike S0.1 aprovar; caso contrário, botão "Abrir conta" (janela dedicada).
+- Área do jogo: o jogo proíbe iframe (spike S0.1). Cartão **Sessão do jogo** com status, hunt, hora do último dado e botão **Abrir/Focar conta**, que pede à extensão do perfil da conta para focar a aba (janela dedicada).
 - **Aceite:** as 4 contas atualizam em até 2 s após um snapshot; layout sem rolagem horizontal de 360 px a 2560 px.
 
 ### F3 — Hunts por conta
@@ -46,7 +46,7 @@ Cada conta mostra:
 - Abas **XP/h, Ouro/h, Shiny/h, Raros/h**; chips de região; lista de hunts liberadas para o nível do treinador, ordenada pela aba.
 - Colunas: hunt (nome, nível, região, tipos), XP/h, ouro/h, abates/h, "mata em", risco de desmaio, shiny ("1 a cada X h").
 - Raros/h lista as Outlands liberadas (única fonte de Bronze Boss Token e fragmentos). Shiny/h exclui a Outland (shiny não rola lá).
-- **Aceite:** fórmulas de shiny/h e raros/h conforme `docs/GAME_RULES.md` §5 e §4, com testes unitários. XP/h, ouro/h, abates/h e risco dependem do spike S0.3; até lá, a tela exibe "dados indisponíveis" em vez de números inventados.
+- **Aceite:** fórmulas de shiny/h e raros/h conforme `docs/GAME_RULES.md` §5 e §4, com testes unitários. XP/h, ouro/h e abates/h vêm **direto do jogo**: medições reais que a extensão lê das sessões de cada conta, gravadas por hunt (decisão do dono, S0.3). Cada valor mostra a origem (conta e data). Hunt sem medição mostra "sem medição ainda", nunca número estimado. "Mata em" e risco seguem pendentes (`OPEN_QUESTIONS.md` #4, #14).
 
 ### F4 — Calendário e rotina diária
 - Eventos por horário de Brasília (ver `docs/GAME_RULES.md` §11) com contagem regressiva.
